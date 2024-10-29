@@ -63,5 +63,29 @@ create table wwi_dim.dim_payment_method
 	lineage_key int not null
 );
 
+drop table if exists wwi_dim.dim_stock_item;
+create table wwi_dim.dim_stock_item
+(
+	stock_item_key bigint generated always as identity,
+	wwi_stock_item_id int not null,
+	stock_item string not null,
+	color string not null,
+	selling_package string not null,
+	buying_package string not null,
+	brand string not null,
+	size string not null,
+	lead_time_days int not null,
+	quantity_per_outer int not null,
+	is_chiller_stock boolean not null,
+	barcode string,
+	tax_rate decimal(18, 3) not null,
+	unit_price decimal(18, 2) not null,
+	recommended_retail_price decimal(18, 2),
+	typical_weight_per_unit decimal(18, 3) not null,
+	photo binary,
+	valid_from timestamp not null,
+	valid_to timestamp not null,
+	lineage_key bigint not null
+);
 
 
