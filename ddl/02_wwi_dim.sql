@@ -104,4 +104,15 @@ create table wwi_dim.dim_supplier
   lineage_key bigint not null
 );
 
+drop table if exists wwi_dim.dim_transaction_type;
+create table wwi_dim.dim_transaction_type
+(
+	transaction_type_key bigint generated always as identity,
+	wwi_transaction_type_id int not null,
+	transaction_type string not null,
+	valid_from timestamp not null,
+	valid_to timestamp not null,
+	lineage_key bigint not null
+);
+
 
