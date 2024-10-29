@@ -88,4 +88,20 @@ create table wwi_dim.dim_stock_item
 	lineage_key bigint not null
 );
 
+drop table if exists wwi_dim.dim_supplier;
+create table wwi_dim.dim_supplier
+(
+  supplier_key bigint generated always as identity,
+  wwi_supplier_id int not null,
+  supplier string not null,
+  category string not null,
+  primary_contact string not null,
+  supplier_reference string,
+  payment_days int not null,
+  postal_code string not null,
+  valid_from timestamp not null,
+  valid_to timestamp not null,
+  lineage_key bigint not null
+);
+
 
