@@ -20,11 +20,13 @@ pk_column_name = f"{table_name}_key"
 
 # COMMAND ----------
 
-stg_movement_df = spark.table(f"wwi_stage.{stg_table_name}").alias("stg_movement").drop("stock_item_key")
+stg_movement_df = spark.table(f"wwi_stage.{stg_table_name}").alias("stg_movement") \
+    .drop("stock_item_key").drop("customer_key").drop("supplier_key").drop("transaction_type_key")
+    
 dim_stock_item_df = spark.table(f"wwi_dim.dim_stock_item").alias("dim_stock_item")
-dim_customer_df = spark.table(f"wwi_dim.dim_customer").alias("dim_customer").drop("customer_key")
-dim_supplier_df = spark.table(f"wwi_dim.dim_supplier").alias("dim_supplier").drop("supplier_key")
-dim_transaction_type_df = spark.table(f"wwi_dim.dim_transaction_type").alias("dim_transaction_type").drop("transaction_type_key")
+dim_customer_df = spark.table(f"wwi_dim.dim_customer").alias("dim_customer")
+dim_supplier_df = spark.table(f"wwi_dim.dim_supplier").alias("dim_supplier")
+dim_transaction_type_df = spark.table(f"wwi_dim.dim_transaction_type").alias("dim_transaction_type")
 
 stg_movement_df = stg_movement_df \
     .join(dim_stock_item_df,
@@ -58,6 +60,10 @@ stg_movement_df = stg_movement_df \
         "transaction_type_key": -99
     }) \
     .select("stg_movement.*", "stock_item_key", "customer_key", "supplier_key", "transaction_type_key")
+
+# COMMAND ----------
+
+display(stg_movement_df)
 
 # COMMAND ----------
 

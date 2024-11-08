@@ -40,10 +40,11 @@ stg_df = get_wwi_db_dataframe(control_metadata["datasource_name"], sp_params)
 # Add columns for dimension keys.
 stg_df = stg_df.withColumn("lineage_key", f.lit(lineage_key).cast("bigint")) \
     .withColumn(pk_column_name, f.monotonically_increasing_id()) \
-    .withColumn("stock_item_key", f.lit(None).cast("bigint")) \
+    .withColumn("city_key", f.lit(None).cast("bigint")) \
     .withColumn("customer_key", f.lit(None).cast("bigint")) \
-    .withColumn("supplier_key", f.lit(None).cast("bigint")) \
-    .withColumn("transaction_type_key", f.lit(None).cast("bigint"))
+    .withColumn("stock_item_key", f.lit(None).cast("bigint")) \
+    .withColumn("salesperson_key", f.lit(None).cast("bigint")) \
+    .withColumn("picker_key", f.lit(None).cast("bigint"))
 
 # COMMAND ----------
 
