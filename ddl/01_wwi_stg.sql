@@ -1,18 +1,18 @@
 use catalog wide_world_importers_dw;
 
-create schema if not exists wwi_stage;
+create schema if not exists wwi_stg;
 
-use schema wwi_stage;
+use schema wwi_stg;
 
-drop table if exists wwi_stage.etl_control;
-create table wwi_stage.etl_control
+drop table if exists wwi_stg.etl_control;
+create table wwi_stg.etl_control
 (
   table_name string not null,
   datasource_name string,
   cutoff_time timestamp not null
 );
 
-insert into wwi_stage.etl_control (table_name, datasource_name, cutoff_time) values
+insert into wwi_stg.etl_control (table_name, datasource_name, cutoff_time) values
 ('dim_transaction_type', 'Integration.GetTransactionTypeUpdates', '2010-01-01 00:00:00.000'),
 ('dim_payment_method', 'Integration.GetPaymentMethodUpdates', '2010-01-01 00:00:00.000'),
 ('fct_stock_holding', 'Integration.GetStockHoldingUpdates', '2010-01-01 00:00:00.000'),
@@ -28,8 +28,8 @@ insert into wwi_stage.etl_control (table_name, datasource_name, cutoff_time) val
 ('dim_city', 'Integration.GetCityUpdates', '2010-01-01 00:00:00.000'),
 ('fct_sale', 'Integration.GetSaleUpdates', '2010-01-01 00:00:00.000');
 
-drop table if exists wwi_stage.etl_lineage;
-create table wwi_stage.etl_lineage
+drop table if exists wwi_stg.etl_lineage;
+create table wwi_stg.etl_lineage
 (
   lineage_key bigint not null generated always as identity,
   data_load_started timestamp not null,

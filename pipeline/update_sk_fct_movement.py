@@ -20,7 +20,7 @@ pk_column_name = f"{table_name}_key"
 
 # COMMAND ----------
 
-stg_movement_df = spark.table(f"wwi_stage.{stg_table_name}").alias("stg_movement") \
+stg_movement_df = spark.table(f"wwi_stg.{stg_table_name}").alias("stg_movement") \
     .drop("stock_item_key").drop("customer_key").drop("supplier_key").drop("transaction_type_key")
     
 dim_stock_item_df = spark.table(f"wwi_dim.dim_stock_item").alias("dim_stock_item")
@@ -63,11 +63,7 @@ stg_movement_df = stg_movement_df \
 
 # COMMAND ----------
 
-display(stg_movement_df)
-
-# COMMAND ----------
-
-stg_dlt = DeltaTable.forName(spark, f"wwi_stage.{stg_table_name}")
+stg_dlt = DeltaTable.forName(spark, f"wwi_stg.{stg_table_name}")
 
 # Update the required dimension keys.
 stg_dlt.alias("target") \

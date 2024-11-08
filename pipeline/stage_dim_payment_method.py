@@ -41,4 +41,4 @@ stg_df = stg_df.withColumn("lineage_key", f.lit(lineage_key).cast("bigint"))
 # COMMAND ----------
 
 # Insert overwrite.
-stg_df.write.format("delta").mode("overwrite").saveAsTable(f"wwi_stage.{stg_table_name}")
+stg_df.write.format("delta").mode("overwrite").saveAsTable(f"wwi_stg.{stg_table_name}")

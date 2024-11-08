@@ -16,13 +16,13 @@ table_name = dbutils.widgets.get("table_name")
 target_etl_cutoff_time = dbutils.widgets.get("target_etl_cutoff_time")
 
 stg_table_name = f"stg_{table_name}"
-fact_table_name = f"fct_{table_name}"
+fct_table_name = f"fct_{table_name}"
 pk_column_name = f"{table_name}_key"
 
 # Lineage ID to track batch status.
-lineage_key = generate_lineage_key(fact_table_name, target_etl_cutoff_time)
+lineage_key = generate_lineage_key(fct_table_name, target_etl_cutoff_time)
 # ETL control metadata, which includes datasource name and last cutoff time.
-control_metadata = get_control_metadata(fact_table_name)
+control_metadata = get_control_metadata(fct_table_name)
 
 # COMMAND ----------
 
@@ -48,4 +48,4 @@ stg_df = stg_df.withColumn("lineage_key", f.lit(lineage_key).cast("bigint")) \
 # COMMAND ----------
 
 # Insert overwrite.
-stg_df.write.format("delta").mode("overwrite").saveAsTable(f"wwi_stage.{stg_table_name}")
+stg_df.write.format("delta").mode("overwrite").saveAsTable(f"wwi_stg.{stg_table_name}")
