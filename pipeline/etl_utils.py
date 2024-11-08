@@ -15,11 +15,11 @@ def generate_lineage_key(table_name, new_cutoff_time):
     data_load_started_when = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
 
     spark.sql(f"""
-        INSERT INTO wwi_stage.etl_lineage(data_load_started, table_name, data_load_completed, was_successful, source_system_cutoff_time)
+        INSERT INTO wwi_stg.etl_lineage(data_load_started, table_name, data_load_completed, was_successful, source_system_cutoff_time)
         VALUES('{data_load_started_when}', '{table_name}', NULL, 0, '{new_cutoff_time}')"""
     )
 
-    etl_lineage_df = spark.table("wwi_stage.etl_lineage") \
+    etl_lineage_df = spark.table("wwi_stg.etl_lineage") \
         .filter(f.col("table_name") == table_name) \
         .filter(f.col("data_load_started") == f.to_timestamp(f.lit(data_load_started_when), "yyyy-MM-dd HH:mm:ss.SSSSSS")) \
         .orderBy(f.col("lineage_key").desc()) \
@@ -30,7 +30,7 @@ def generate_lineage_key(table_name, new_cutoff_time):
 # COMMAND ----------
 
 def get_last_lineage_key(table_name):
-    etl_lineage_df = spark.table("wwi_stage.etl_lineage") \
+    etl_lineage_df = spark.table("wwi_stg.etl_lineage") \
         .filter(f.col("table_name") == table_name) \
         .filter(f.col("data_load_completed").isNull()) \
         .orderBy(f.col("lineage_key").desc()) \
@@ -42,7 +42,7 @@ def get_last_lineage_key(table_name):
 # COMMAND ----------
 
 def get_lineage_cutoff_time(lineage_key):
-    etl_lineage_df = spark.table("wwi_stage.etl_lineage") \
+    etl_lineage_df = spark.table("wwi_stg.etl_lineage") \
         .filter(f.col("lineage_key") == lineage_key) \
         .select(f.date_format("source_system_cutoff_time", "yyyy-MM-dd HH:mm:ss.SSSSSS"))
 
@@ -51,7 +51,7 @@ def get_lineage_cutoff_time(lineage_key):
 # COMMAND ----------
 
 def get_control_metadata(table_name):
-    etl_control_df = spark.table("wwi_stage.etl_control") \
+    etl_control_df = spark.table("wwi_stg.etl_control") \
         .filter(f.col("table_name") == table_name) \
         .select(
             "datasource_name",
@@ -66,7 +66,7 @@ def get_control_metadata(table_name):
 # COMMAND ----------
 
 def get_datasource_name(table_name):
-    etl_control_df = spark.table("wwi_stage.etl_control") \
+    etl_control_df = spark.table("wwi_stg.etl_control") \
         .filter(f.col("table_name") == table_name) \
         .select("datasource_name")
     
@@ -107,8 +107,8 @@ def update_lineage_status(table_name):
     lineage_key = get_last_lineage_key(table_name)
 
     # Update ELT lineage and cutoff tables with new status.
-    etl_lineage_dlt = DeltaTable.forName(spark, "wwi_stage.etl_lineage")
-    etl_control_dlt = DeltaTable.forName(spark, "wwi_stage.etl_control")
+    etl_lineage_dlt = DeltaTable.forName(spark, "wwi_stg.etl_lineage")
+    etl_control_dlt = DeltaTable.forName(spark, "wwi_stg.etl_control")
 
     # Mark as completed.
     etl_lineage_dlt.update(
