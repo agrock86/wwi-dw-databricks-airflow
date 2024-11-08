@@ -19,4 +19,28 @@ create table wwi_fct.fct_movement
     lineage_key bigint not null
 ) partitioned by (date_key);
 
+drop table if exists wwi_fct.fct_order;
+create table wwi_fct.fct_order
+(
+    city_key bigint not null,
+    customer_key bigint not null,
+    stock_item_key bigint not null,
+    order_date_key date not null,
+    picked_date_key date,
+    salesperson_key bigint not null,
+    picker_key bigint,
+    wwi_order_id int not null,
+    wwi_backorder_id int,
+    description string not null,
+    package string not null,
+    quantity int not null,
+    unit_price decimal(18, 2) not null,
+    tax_rate decimal(18, 3) not null,
+    total_excluding_tax decimal(18, 2) not null,
+    tax_amount decimal(18, 2) not null,
+    total_including_tax decimal(18, 2) not null,
+    lineage_key bigint not null
+)
+partitioned by (order_date_key);
+
 

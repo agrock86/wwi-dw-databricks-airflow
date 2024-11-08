@@ -21,7 +21,7 @@ pk_column_name = f"{table_name}_key"
 # COMMAND ----------
 
 stg_order_df = spark.table(f"wwi_stg.{stg_table_name}").alias("stg_movement") \
-    .drop("city_key").drop("customer_key").drop("stock_item_key").drop("salesperson_key").drop("picker_key")
+    .drop("city_key", "customer_key", "stock_item_key", "salesperson_key", "picker_key")
 dim_city_df = spark.table(f"wwi_dim.dim_city").alias("dim_city")
 dim_customer_df = spark.table(f"wwi_dim.dim_customer").alias("dim_customer")
 dim_stock_item_df = spark.table(f"wwi_dim.dim_stock_item").alias("dim_stock_item")
@@ -74,10 +74,6 @@ stg_order_df = stg_order_df \
         "salesperson_key": -99,
         "picker_key": -99
     })
-
-# COMMAND ----------
-
-display(stg_order_df)
 
 # COMMAND ----------
 
