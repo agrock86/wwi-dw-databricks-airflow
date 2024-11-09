@@ -98,4 +98,27 @@ create table wide_world_importers_dw.wwi_fct.fct_stock_holding
     lineage_key bigint not null
 );
 
+drop table if exists wide_world_importers_dw.wwi_fct.fct_transaction;
+create table wide_world_importers_dw.wwi_fct.fct_transaction
+(
+    date_key date not null,
+    customer_key bigint,
+    bill_to_customer_key bigint,
+    supplier_key bigint,
+    transaction_type_key bigint not null,
+    payment_method_key bigint,
+    wwi_customer_transaction_id int,
+    wwi_supplier_transaction_id int,
+    wwi_invoice_id int,
+    wwi_purchase_order_id int,
+    supplier_invoice_number string,
+    total_excluding_tax decimal(18, 2) not null,
+    tax_amount decimal(18, 2) not null,
+    total_including_tax decimal(18, 2) not null,
+    outstanding_balance decimal(18, 2) not null,
+    is_finalized boolean not null,
+    lineage_key bigint not null
+)
+partitioned by (date_key);
+
 
