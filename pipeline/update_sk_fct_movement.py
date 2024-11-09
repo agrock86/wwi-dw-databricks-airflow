@@ -20,7 +20,7 @@ pk_column_name = f"{table_name}_key"
 
 # COMMAND ----------
 
-stg_movement_df = spark.table(f"wwi_stg.{stg_table_name}").alias("stg_movement") \
+stg_movement_df = spark.table(f"wwi_stg.{stg_table_name}").alias(stg_table_name) \
     .drop("stock_item_key", "customer_key", "supplier_key", "transaction_type_key")
     
 dim_stock_item_df = spark.table(f"wwi_dim.dim_stock_item").alias("dim_stock_item")
@@ -53,13 +53,13 @@ stg_movement_df = stg_movement_df \
         (stg_movement_df["transaction_occurred_when"] <= dim_transaction_type_df["valid_to"]),
         "left"
     ) \
+    .select(f"{stg_table_name}.*", "stock_item_key", "customer_key", "supplier_key", "transaction_type_key") \
     .na.fill({
         "stock_item_key": -99,
         "customer_key": -99,
         "supplier_key": -99,
         "transaction_type_key": -99
-    }) \
-    .select("stg_movement.*", "stock_item_key", "customer_key", "supplier_key", "transaction_type_key")
+    })
 
 # COMMAND ----------
 

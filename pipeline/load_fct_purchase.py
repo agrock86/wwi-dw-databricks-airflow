@@ -16,19 +16,14 @@ table_name = dbutils.widgets.get("table_name")
 
 stg_table_name = f"stg_{table_name}"
 fct_table_name = f"fct_{table_name}"
-pk_column_name = f"wwi_{table_name}_id"
+pk_column_name = f"wwi_purchase_order_id"
 
 # COMMAND ----------
 
-# Drop columns not required for the insert operation and cast to appropriate data types.
+# Drop columns not required for the insert operation.
 stg_df = spark.table(f"wwi_stg.{stg_table_name}") \
     .drop(f"{table_name}_key", "last_modified_when") \
-    .drop("wwi_city_id", "wwi_customer_id", "wwi_stock_item_id", "wwi_salesperson_id", "wwi_picker_id") \
-    .withColumn("unit_price", f.col("unit_price").cast("decimal(18,2)")) \
-    .withColumn("tax_rate", f.col("tax_rate").cast("decimal(18,3)")) \
-    .withColumn("total_excluding_tax", f.col("total_excluding_tax").cast("decimal(18,2)")) \
-    .withColumn("tax_amount", f.col("tax_amount").cast("decimal(18,2)")) \
-    .withColumn("total_including_tax", f.col("total_including_tax").cast("decimal(18,2)"))
+    .drop("wwi_supplier_id", "wwi_stock_item_id")
 
 # COMMAND ----------
 

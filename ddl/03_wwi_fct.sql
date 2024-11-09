@@ -43,4 +43,21 @@ create table wwi_fct.fct_order
 )
 partitioned by (order_date_key);
 
+drop table if exists wwi_fct.fct_purchase;
+
+create table wwi_fct.fct_purchase (
+    purchase_key bigint generated always as identity,
+    date_key date not null,
+    supplier_key bigint not null,
+    stock_item_key bigint not null,
+    wwi_purchase_order_id int,
+    ordered_outers int not null,
+    ordered_quantity int not null,
+    received_outers int not null,
+    package string not null,
+    is_order_finalized boolean not null,
+    lineage_key bigint not null
+)
+partitioned by (date_key);
+
 
