@@ -20,7 +20,8 @@ create table wwi_dim.dim_city
 	latest_recorded_population bigint not null,
 	valid_from timestamp not null,
 	valid_to timestamp not null,
-  lineage_key bigint not null
+  lineage_key bigint not null,
+	primary key(city_key)
 );
 
 drop table if exists wwi_dim.dim_customer;
@@ -36,7 +37,8 @@ create table wwi_dim.dim_customer
 	postal_code string not null,
 	valid_from timestamp not null,
 	valid_to timestamp not null,
-	lineage_key bigint not null
+	lineage_key bigint not null,
+	primary key(customer_key)
 );
 
 drop table if exists wwi_dim.dim_employee;
@@ -50,7 +52,8 @@ create table wwi_dim.dim_employee
 	photo binary,
 	valid_from timestamp not null,
 	valid_to timestamp not null,
-	lineage_key bigint not null
+	lineage_key bigint not null,
+	primary key(employee_key)
 );
 
 drop table if exists wwi_dim.dim_payment_method;
@@ -61,7 +64,8 @@ create table wwi_dim.dim_payment_method
 	payment_method string not null,
 	valid_from timestamp not null,
 	valid_to timestamp not null,
-	lineage_key int not null
+	lineage_key int not null,
+	primary key(payment_method_key)
 );
 
 drop table if exists wwi_dim.dim_stock_item;
@@ -86,7 +90,8 @@ create table wwi_dim.dim_stock_item
 	photo binary,
 	valid_from timestamp not null,
 	valid_to timestamp not null,
-	lineage_key bigint not null
+	lineage_key bigint not null,
+	primary key(stock_item_key)
 );
 
 drop table if exists wwi_dim.dim_supplier;
@@ -102,7 +107,8 @@ create table wwi_dim.dim_supplier
   postal_code string not null,
   valid_from timestamp not null,
   valid_to timestamp not null,
-  lineage_key bigint not null
+  lineage_key bigint not null,
+	primary key(supplier_key)
 );
 
 drop table if exists wwi_dim.dim_transaction_type;
@@ -113,7 +119,8 @@ create table wwi_dim.dim_transaction_type
 	transaction_type string not null,
 	valid_from timestamp not null,
 	valid_to timestamp not null,
-	lineage_key bigint not null
+	lineage_key bigint not null,
+	primary key(transaction_type_key)
 );
 
 
