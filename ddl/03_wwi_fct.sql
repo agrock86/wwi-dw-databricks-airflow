@@ -75,7 +75,7 @@ create table wide_world_importers_dw.wwi_fct.fct_sale
 (
     city_key bigint not null,
     customer_key bigint not null,
-    bill_to_customer_key bigint not null,
+    bill_customer_key bigint not null,
     stock_item_key bigint not null,
     invoice_date_key date not null,
     delivery_date_key date,
@@ -95,7 +95,7 @@ create table wide_world_importers_dw.wwi_fct.fct_sale
     lineage_key bigint not null,
     constraint fk_fct_sale_city_key foreign key (city_key) references wwi_dim.dim_city(city_key),
     constraint fk_fct_sale_customer_key foreign key (customer_key) references wwi_dim.dim_customer(customer_key),
-    constraint fk_fct_sale_bill_to_customer_key foreign key (bill_to_customer_key) references wwi_dim.dim_customer(customer_key),
+    constraint fk_fct_sale_bill_customer_key foreign key (bill_customer_key) references wwi_dim.dim_customer(customer_key),
     constraint fk_fct_sale_stock_item_key foreign key (stock_item_key) references wwi_dim.dim_stock_item(stock_item_key),
     constraint fk_fct_sale_salesperson_key foreign key (salesperson_key) references wwi_dim.dim_employee(employee_key)
 )
@@ -120,7 +120,7 @@ create table wide_world_importers_dw.wwi_fct.fct_transaction
 (
     date_key date not null,
     customer_key bigint,
-    bill_to_customer_key bigint,
+    bill_customer_key bigint,
     supplier_key bigint,
     transaction_type_key bigint not null,
     payment_method_key bigint,
@@ -136,7 +136,7 @@ create table wide_world_importers_dw.wwi_fct.fct_transaction
     is_finalized boolean not null,
     lineage_key bigint not null,
     constraint fk_fct_transaction_customer_key foreign key (customer_key) references wwi_dim.dim_customer(customer_key),
-    constraint fk_fct_transaction_bill_to_customer_key foreign key (bill_to_customer_key) references wwi_dim.dim_customer(customer_key),
+    constraint fk_fct_transaction_bill_customer_key foreign key (bill_customer_key) references wwi_dim.dim_customer(customer_key),
     constraint fk_fct_transaction_supplier_key foreign key (supplier_key) references wwi_dim.dim_supplier(supplier_key),
     constraint fk_fct_transaction_transaction_type_key foreign key (transaction_type_key) references wwi_dim.dim_transaction_type(transaction_type_key),
     constraint fk_fct_transaction_payment_method_key foreign key (payment_method_key) references wwi_dim.dim_payment_method(payment_method_key)

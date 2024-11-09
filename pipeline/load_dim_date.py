@@ -19,8 +19,9 @@ start_date = start_date.strftime('%Y-%m-%d')
 
 # Transformations.
 stg_date_df = spark.range(0, num_days) \
-    .withColumn("id", f.expr("id").cast("int")) \
-    .withColumn("date", f.expr(f"date_add('{start_date}', id)")) \
+    .withColumn("id", f.col("id").cast("int")) \
+    .withColumn("date", f.date_add(f.lit(start_date), f.col("id"))) \
+    .withColumn("date_key", f.date_format("date", "yyyyMMdd").cast("bigint")) \
     .withColumn("day_number", f.dayofmonth("date")) \
     .withColumn("day", f.date_format("date", "d")) \
     .withColumn("month", f.date_format("date", "MMMM")) \
