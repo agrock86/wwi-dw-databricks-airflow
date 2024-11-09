@@ -77,7 +77,7 @@ def get_datasource_name(table_name):
 
 # COMMAND ----------
 
-def get_wwi_db_dataframe(sp_name, sp_params):
+def get_wwi_db_dataframe(sp_name, sp_params={}):
     # Get DB login credentials from Azure Key Vault.
     wwi_db_host = dbutils.secrets.get(scope = "wwi-migration", key = "wwi-db-host")
     wwi_db_name = dbutils.secrets.get(scope = "wwi-migration", key = "wwi-db-name")

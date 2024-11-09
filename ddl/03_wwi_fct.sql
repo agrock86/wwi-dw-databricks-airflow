@@ -85,4 +85,17 @@ create table wide_world_importers_dw.wwi_fct.fct_sale
 )
 partitioned by (invoice_date_key);
 
+drop table if exists wide_world_importers_dw.wwi_fct.fct_stock_holding;
+create table wide_world_importers_dw.wwi_fct.fct_stock_holding
+(
+    stock_item_key bigint not null,
+    quantity_on_hand int not null,
+    bin_location string not null,
+    last_stocktake_quantity int not null,
+    last_cost_price decimal(18, 2) not null,
+    reorder_level int not null,
+    target_stock_level int not null,
+    lineage_key bigint not null
+);
+
 
