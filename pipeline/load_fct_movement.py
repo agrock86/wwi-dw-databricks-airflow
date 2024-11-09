@@ -21,7 +21,7 @@ pk_column_name = f"wwi_stock_item_transaction_id"
 # COMMAND ----------
 
 # Drop columns not required for the merge operation.
-stg_df = spark.table(f"wwi_stage.{stg_table_name}").drop("movement_key", "transaction_occured_when")
+stg_df = spark.table(f"wwi_stg.{stg_table_name}").drop("movement_key", "transaction_occured_when")
 
 # COMMAND ----------
 

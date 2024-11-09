@@ -21,8 +21,8 @@ pk_column_name = f"wwi_{table_name}_id"
 
 # COMMAND ----------
 
-stg_df = spark.table(f"wwi_stage.{stg_table_name}")
-closeoff_df = spark.table(f"wwi_stage.{stg_table_name}") \
+stg_df = spark.table(f"wwi_stg.{stg_table_name}")
+closeoff_df = spark.table(f"wwi_stg.{stg_table_name}") \
     .groupBy(pk_column_name).agg(f.min("valid_from").alias("valid_from"))
 
 # COMMAND ----------
