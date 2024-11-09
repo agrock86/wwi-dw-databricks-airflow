@@ -22,7 +22,7 @@ pk_column_name = f"{table_name}_key"
 # COMMAND ----------
 
 stg_transaction_df = spark.table(f"wwi_stg.{stg_table_name}").alias(stg_table_name) \
-    .drop("customer_key", "bill_to_customer_key", "supplier_key", "transaction_type_key", "payment_method_key")
+    .drop("customer_key", "bill_customer_key", "supplier_key", "transaction_type_key", "payment_method_key")
 
 dim_customer_df = spark.table(f"wwi_dim.dim_customer").alias("dim_customer")
 dim_bill_customer_df = spark.table(f"wwi_dim.dim_customer").alias("dim_bill_customer")
@@ -73,14 +73,14 @@ stg_transaction_df = stg_transaction_df \
     .select(
         f"{stg_table_name}.*",
         "dim_customer.customer_key",
-        f.col("dim_bill_customer.customer_key").alias("bill_to_customer_key"),
+        f.col("dim_bill_customer.customer_key").alias("bill_customer_key"),
         "supplier_key",
         "transaction_type_key",
         "payment_method_key"
     ).drop("row_num") \
     .na.fill({
         "customer_key": 0,
-        "bill_to_customer_key": 0,
+        "bill_customer_key": 0,
         "supplier_key": 0,
         "transaction_type_key": 0,
         "payment_method_key": 0
@@ -96,7 +96,7 @@ stg_dt.alias("target") \
     .whenMatchedUpdate(
         set = {
             "customer_key": "source.customer_key",
-            "bill_to_customer_key": "source.bill_to_customer_key",
+            "bill_customer_key": "source.bill_customer_key",
             "supplier_key": "source.supplier_key",
             "transaction_type_key": "source.transaction_type_key",
             "payment_method_key": "source.payment_method_key"

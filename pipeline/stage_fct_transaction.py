@@ -41,7 +41,7 @@ stg_transaction_df = get_wwi_db_dataframe(control_metadata["datasource_name"], s
 stg_transaction_df = stg_transaction_df.withColumn("lineage_key", f.lit(lineage_key).cast("bigint")) \
     .withColumn(pk_column_name, f.monotonically_increasing_id()) \
     .withColumn("customer_key", f.lit(None).cast("bigint")) \
-    .withColumn("bill_to_customer_key", f.lit(None).cast("bigint")) \
+    .withColumn("bill_customer_key", f.lit(None).cast("bigint")) \
     .withColumn("supplier_key", f.lit(None).cast("bigint")) \
     .withColumn("transaction_type_key", f.lit(None).cast("bigint")) \
     .withColumn("payment_method_key", f.lit(None).cast("bigint"))

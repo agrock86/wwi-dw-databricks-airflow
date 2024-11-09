@@ -42,7 +42,7 @@ stg_sale_df = stg_sale_df.withColumn("lineage_key", f.lit(lineage_key).cast("big
     .withColumn(pk_column_name, f.monotonically_increasing_id()) \
     .withColumn("city_key", f.lit(None).cast("bigint")) \
     .withColumn("customer_key", f.lit(None).cast("bigint")) \
-    .withColumn("bill_to_customer_key", f.lit(None).cast("bigint")) \
+    .withColumn("bill_customer_key", f.lit(None).cast("bigint")) \
     .withColumn("stock_item_key", f.lit(None).cast("bigint")) \
     .withColumn("salesperson_key", f.lit(None).cast("bigint"))
 

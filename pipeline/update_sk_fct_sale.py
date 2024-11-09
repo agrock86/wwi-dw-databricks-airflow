@@ -22,7 +22,7 @@ pk_column_name = f"{table_name}_key"
 # COMMAND ----------
 
 stg_order_df = spark.table(f"wwi_stg.{stg_table_name}").alias(stg_table_name) \
-    .drop("city_key", "customer_key", "bill_to_customer_key", "stock_item_key", "salesperson_key")
+    .drop("city_key", "customer_key", "bill_customer_key", "stock_item_key", "salesperson_key")
 
 dim_city_df = spark.table(f"wwi_dim.dim_city").alias("dim_city")
 dim_customer_df = spark.table(f"wwi_dim.dim_customer").alias("dim_customer")
@@ -74,14 +74,14 @@ stg_order_df = stg_order_df \
         f"{stg_table_name}.*",
         "city_key",
         "dim_customer.customer_key",
-        f.col("dim_bill_customer.customer_key").alias("bill_to_customer_key"),
+        f.col("dim_bill_customer.customer_key").alias("bill_customer_key"),
         "stock_item_key",
         f.col("dim_salesperson.employee_key").alias("salesperson_key")
     ).drop("row_num") \
     .na.fill({
         "city_key": 0,
         "customer_key": 0,
-        "bill_to_customer_key": 0,
+        "bill_customer_key": 0,
         "stock_item_key": 0,
         "salesperson_key": 0
     })
@@ -97,7 +97,7 @@ stg_dt.alias("target") \
         set = {
             "city_key": "source.city_key",
             "customer_key": "source.customer_key",
-            "bill_to_customer_key": "source.bill_to_customer_key",
+            "bill_customer_key": "source.bill_customer_key",
             "stock_item_key": "source.stock_item_key",
             "salesperson_key": "source.salesperson_key"
         }
