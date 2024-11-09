@@ -24,7 +24,8 @@ create table wwi_dim.dim_city
 );
 
 drop table if exists wwi_dim.dim_customer;
-create table wwi_dim.dim_customer(
+create table wwi_dim.dim_customer
+(
 	customer_key bigint not null generated always as identity,
 	wwi_customer_id int not null,
 	customer string not null,

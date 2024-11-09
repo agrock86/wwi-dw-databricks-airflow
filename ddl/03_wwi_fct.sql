@@ -44,9 +44,8 @@ create table wwi_fct.fct_order
 partitioned by (order_date_key);
 
 drop table if exists wwi_fct.fct_purchase;
-
-create table wwi_fct.fct_purchase (
-    purchase_key bigint generated always as identity,
+create table wwi_fct.fct_purchase
+(
     date_key date not null,
     supplier_key bigint not null,
     stock_item_key bigint not null,
@@ -59,5 +58,31 @@ create table wwi_fct.fct_purchase (
     lineage_key bigint not null
 )
 partitioned by (date_key);
+
+drop table if exists wide_world_importers_dw.wwi_fct.fct_sale;
+create table wide_world_importers_dw.wwi_fct.fct_sale
+(
+    city_key bigint not null,
+    customer_key bigint not null,
+    bill_to_customer_key bigint not null,
+    stock_item_key bigint not null,
+    invoice_date_key date not null,
+    delivery_date_key date,
+    salesperson_key bigint not null,
+    wwi_invoice_id int not null,
+    description string not null,
+    package string not null,
+    quantity int not null,
+    unit_price decimal(18, 2) not null,
+    tax_rate decimal(18, 3) not null,
+    total_excluding_tax decimal(18, 2) not null,
+    tax_amount decimal(18, 2) not null,
+    profit decimal(18, 2) not null,
+    total_including_tax decimal(18, 2) not null,
+    total_dry_items int not null,
+    total_chiller_items int not null,
+    lineage_key bigint not null
+)
+partitioned by (invoice_date_key);
 
 
