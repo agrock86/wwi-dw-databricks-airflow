@@ -21,22 +21,22 @@ pk_column_name = f"wwi_purchase_order_id"
 # COMMAND ----------
 
 # Drop columns not required for the insert operation.
-stg_df = spark.table(f"wwi_stg.{stg_table_name}") \
+stg_purchase_df = spark.table(f"wwi_stg.{stg_table_name}") \
     .drop(f"{table_name}_key", "last_modified_when") \
     .drop("wwi_supplier_id", "wwi_stock_item_id")
 
 # COMMAND ----------
 
-fct_dt = DeltaTable.forName(spark, f"wwi_fct.{fct_table_name}")
+fct_purchase_dt = DeltaTable.forName(spark, f"wwi_fct.{fct_table_name}")
 
 # Delete records in the fact table that have changes in the source.
-fct_dt.alias("target") \
-    .merge(stg_df.alias("source"), f"target.{pk_column_name} = source.{pk_column_name}") \
+fct_purchase_dt.alias("target") \
+    .merge(stg_purchase_df.alias("source"), f"target.{pk_column_name} = source.{pk_column_name}") \
     .whenMatchedDelete() \
     .execute()
 
 # Insert new records.
-stg_df.write.format("delta").mode("append").saveAsTable(f"wwi_fct.{fct_table_name}")
+stg_purchase_df.write.format("delta").mode("append").saveAsTable(f"wwi_fct.{fct_table_name}")
 
 # COMMAND ----------
 

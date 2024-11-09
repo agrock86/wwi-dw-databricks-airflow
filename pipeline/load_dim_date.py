@@ -18,7 +18,7 @@ num_days = (end_date - start_date).days + 1
 start_date = start_date.strftime('%Y-%m-%d')
 
 # Transformations.
-dim_date_df = spark.range(0, num_days) \
+stg_date_df = spark.range(0, num_days) \
     .withColumn("id", f.expr("id").cast("int")) \
     .withColumn("date", f.expr(f"date_add('{start_date}', id)")) \
     .withColumn("day_number", f.dayofmonth("date")) \
@@ -49,4 +49,4 @@ dim_date_df = spark.range(0, num_days) \
 # COMMAND ----------
 
 # Insert overwrite.
-dim_date_df.write.format("delta").mode("overwrite").saveAsTable("wwi_dim.dim_date")
+stg_date_df.write.format("delta").mode("overwrite").saveAsTable("wwi_dim.dim_date")

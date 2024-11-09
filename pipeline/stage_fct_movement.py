@@ -32,13 +32,13 @@ sp_params = {
 }
 
 # Get updates from source.
-stg_df = get_wwi_db_dataframe(control_metadata["datasource_name"], sp_params)
+stg_movement_df = get_wwi_db_dataframe(control_metadata["datasource_name"], sp_params)
 
 # COMMAND ----------
 
 # Add lineage key for reference.
 # Add columns for dimension keys.
-stg_df = stg_df.withColumn("lineage_key", f.lit(lineage_key).cast("bigint")) \
+stg_movement_df = stg_movement_df.withColumn("lineage_key", f.lit(lineage_key).cast("bigint")) \
     .withColumn(pk_column_name, f.monotonically_increasing_id()) \
     .withColumn("stock_item_key", f.lit(None).cast("bigint")) \
     .withColumn("customer_key", f.lit(None).cast("bigint")) \
@@ -48,4 +48,4 @@ stg_df = stg_df.withColumn("lineage_key", f.lit(lineage_key).cast("bigint")) \
 # COMMAND ----------
 
 # Insert overwrite.
-stg_df.write.format("delta").mode("overwrite").saveAsTable(f"wwi_stg.{stg_table_name}")
+stg_movement_df.write.format("delta").mode("overwrite").saveAsTable(f"wwi_stg.{stg_table_name}")

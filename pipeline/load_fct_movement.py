@@ -21,14 +21,14 @@ pk_column_name = f"wwi_stock_item_transaction_id"
 # COMMAND ----------
 
 # Drop columns not required for the merge operation.
-stg_df = spark.table(f"wwi_stg.{stg_table_name}").drop("movement_key", "transaction_occured_when")
+stg_movement_df = spark.table(f"wwi_stg.{stg_table_name}").drop("movement_key", "transaction_occured_when")
 
 # COMMAND ----------
 
-fct_dt = DeltaTable.forName(spark, f"wwi_fct.{fct_table_name}")
+fct_movement_dt = DeltaTable.forName(spark, f"wwi_fct.{fct_table_name}")
 
-fct_dt.alias("target") \
-    .merge(stg_df.alias("source"), f"target.{pk_column_name} = source.{pk_column_name}") \
+fct_movement_dt.alias("target") \
+    .merge(stg_movement_df.alias("source"), f"target.{pk_column_name} = source.{pk_column_name}") \
     .whenMatchedUpdateAll() \
     .whenNotMatchedInsertAll() \
     .execute()

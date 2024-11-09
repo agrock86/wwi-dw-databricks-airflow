@@ -27,17 +27,17 @@ control_metadata = get_control_metadata(fct_table_name)
 # COMMAND ----------
 
 # Get updates from source.
-stg_df = get_wwi_db_dataframe(control_metadata["datasource_name"])
+stg_stock_holding_df = get_wwi_db_dataframe(control_metadata["datasource_name"])
 
 # COMMAND ----------
 
 # Add lineage key for reference.
 # Add columns for dimension keys.
-stg_df = stg_df.withColumn("lineage_key", f.lit(lineage_key).cast("bigint")) \
+stg_stock_holding_df = stg_stock_holding_df.withColumn("lineage_key", f.lit(lineage_key).cast("bigint")) \
     .withColumn(pk_column_name, f.monotonically_increasing_id()) \
     .withColumn("stock_item_key", f.lit(None).cast("bigint"))
 
 # COMMAND ----------
 
 # Insert overwrite.
-stg_df.write.format("delta").mode("overwrite").saveAsTable(f"wwi_stg.{stg_table_name}")
+stg_stock_holding_df.write.format("delta").mode("overwrite").saveAsTable(f"wwi_stg.{stg_table_name}")
