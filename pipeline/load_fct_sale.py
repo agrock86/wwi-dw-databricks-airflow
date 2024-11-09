@@ -33,10 +33,10 @@ stg_df = spark.table(f"wwi_stg.{stg_table_name}") \
 
 # COMMAND ----------
 
-fct_dlt = DeltaTable.forName(spark, f"wwi_fct.{fct_table_name}")
+fct_dt = DeltaTable.forName(spark, f"wwi_fct.{fct_table_name}")
 
 # Delete records in the fact table that have changes in the source.
-fct_dlt.alias("target") \
+fct_dt.alias("target") \
     .merge(stg_df.alias("source"), f"target.{pk_column_name} = source.{pk_column_name}") \
     .whenMatchedDelete() \
     .execute()

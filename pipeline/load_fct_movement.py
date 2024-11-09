@@ -25,9 +25,9 @@ stg_df = spark.table(f"wwi_stage.{stg_table_name}").drop("movement_key", "transa
 
 # COMMAND ----------
 
-fct_dlt = DeltaTable.forName(spark, f"wwi_fct.{fct_table_name}")
+fct_dt = DeltaTable.forName(spark, f"wwi_fct.{fct_table_name}")
 
-fct_dlt.alias("target") \
+fct_dt.alias("target") \
     .merge(stg_df.alias("source"), f"target.{pk_column_name} = source.{pk_column_name}") \
     .whenMatchedUpdateAll() \
     .whenNotMatchedInsertAll() \

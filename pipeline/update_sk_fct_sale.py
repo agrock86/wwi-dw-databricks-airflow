@@ -77,10 +77,10 @@ stg_order_df = stg_order_df \
 
 # COMMAND ----------
 
-stg_dlt = DeltaTable.forName(spark, f"wwi_stg.{stg_table_name}")
+stg_dt = DeltaTable.forName(spark, f"wwi_stg.{stg_table_name}")
 
 # Update the required dimension keys.
-stg_dlt.alias("target") \
+stg_dt.alias("target") \
     .merge(stg_order_df.alias("source"), f"target.{pk_column_name} = source.{pk_column_name}") \
     .whenMatchedUpdate(
         set = {

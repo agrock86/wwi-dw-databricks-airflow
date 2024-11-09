@@ -27,11 +27,11 @@ closeoff_df = spark.table(f"wwi_stage.{stg_table_name}") \
 
 # COMMAND ----------
 
-dim_dlt = DeltaTable.forName(spark, f"wwi_dim.{dim_table_name}")
+dim_dt = DeltaTable.forName(spark, f"wwi_dim.{dim_table_name}")
 end_of_time = f.to_timestamp(f.lit("99991231 23:59:59.9999999"), "yyyyMMdd HH:mm:ss.SSSSSSSS")
 
 # Close records in the dim table that have changes in the source.
-dim_dlt.alias("target") \
+dim_dt.alias("target") \
     .merge(closeoff_df.alias("source"), f"target.{pk_column_name} = source.{pk_column_name}") \
     .whenMatchedUpdate(
         condition = f.col("target.valid_to") == end_of_time,
@@ -40,7 +40,7 @@ dim_dlt.alias("target") \
     .execute()
 
 # Insert new records.
-dim_dlt.alias("target") \
+dim_dt.alias("target") \
     .merge(stg_df.alias("source"), f"target.{pk_column_name} = source.{pk_column_name}") \
     .whenNotMatchedInsert(
         values = {
