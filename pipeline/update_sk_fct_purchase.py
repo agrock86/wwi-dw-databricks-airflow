@@ -40,8 +40,8 @@ stg_purchase_df = stg_purchase_df \
     ) \
     .select(f"{stg_table_name}.*", "supplier_key", "stock_item_key") \
     .na.fill({
-        "supplier_key": -99,
-        "stock_item_key": -99
+        "supplier_key": 0,
+        "stock_item_key": 0
     })
 
 # COMMAND ----------

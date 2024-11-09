@@ -55,10 +55,10 @@ stg_movement_df = stg_movement_df \
     ) \
     .select(f"{stg_table_name}.*", "stock_item_key", "customer_key", "supplier_key", "transaction_type_key") \
     .na.fill({
-        "stock_item_key": -99,
-        "customer_key": -99,
-        "supplier_key": -99,
-        "transaction_type_key": -99
+        "stock_item_key": 0,
+        "customer_key": 0,
+        "supplier_key": 0,
+        "transaction_type_key": 0
     })
 
 # COMMAND ----------

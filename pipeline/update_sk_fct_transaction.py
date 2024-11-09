@@ -68,11 +68,11 @@ stg_transaction_df = stg_transaction_df \
         "payment_method_key"
     ) \
     .na.fill({
-        "customer_key": -99,
-        "bill_to_customer_key": -99,
-        "supplier_key": -99,
-        "transaction_type_key": -99,
-        "payment_method_key": -99
+        "customer_key": 0,
+        "bill_to_customer_key": 0,
+        "supplier_key": 0,
+        "transaction_type_key": 0,
+        "payment_method_key": 0
     })
 
 # COMMAND ----------

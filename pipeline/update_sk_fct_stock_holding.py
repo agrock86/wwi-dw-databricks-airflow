@@ -30,7 +30,7 @@ stg_stock_holding_df = stg_stock_holding_df \
     ) \
     .select(f"{stg_table_name}.*", "stock_item_key") \
     .na.fill({
-        "stock_item_key": -99,
+        "stock_item_key": 0,
     })
 
 # COMMAND ----------

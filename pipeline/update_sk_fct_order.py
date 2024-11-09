@@ -68,11 +68,11 @@ stg_order_df = stg_order_df \
         f.col("dim_picker.employee_key").alias("picker_key")
     ) \
     .na.fill({
-        "city_key": -99,
-        "customer_key": -99,
-        "stock_item_key": -99,
-        "salesperson_key": -99,
-        "picker_key": -99
+        "city_key": 0,
+        "customer_key": 0,
+        "stock_item_key": 0,
+        "salesperson_key": 0,
+        "picker_key": 0
     })
 
 # COMMAND ----------
