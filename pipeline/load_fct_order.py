@@ -12,7 +12,7 @@ from delta.tables import DeltaTable
 
 # COMMAND ----------
 
-table_name = dbutils.widgets.get("table_name")
+table_name = "order"
 
 stg_table_name = f"stg_{table_name}"
 fct_table_name = f"fct_{table_name}"

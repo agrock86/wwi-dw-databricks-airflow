@@ -13,7 +13,7 @@ from delta.tables import DeltaTable
 # COMMAND ----------
 
 
-table_name = dbutils.widgets.get("table_name")
+table_name = "employee"
 
 stg_table_name = f"stg_{table_name}"
 dim_table_name = f"dim_{table_name}"
