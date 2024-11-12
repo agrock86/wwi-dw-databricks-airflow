@@ -20,10 +20,11 @@ pk_column_name = f"wwi_purchase_order_id"
 
 # COMMAND ----------
 
-# Drop columns not required for the insert operation.
+# Drop columns not required for the insert operation and apply required transformations.
 stg_purchase_df = spark.table(f"wwi_stg.{stg_table_name}") \
     .drop(f"{table_name}_key", "last_modified_when") \
-    .drop("wwi_supplier_id", "wwi_stock_item_id")
+    .drop("wwi_supplier_id", "wwi_stock_item_id") \
+    .withColumn("date_key", f.date_format("date_key", "yyyyMMdd").cast("bigint"))
 
 # COMMAND ----------
 

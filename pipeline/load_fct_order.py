@@ -20,10 +20,14 @@ pk_column_name = f"wwi_{table_name}_id"
 
 # COMMAND ----------
 
-# Drop columns not required for the insert operation and cast to appropriate data types.
+# Drop columns not required for the insert operation and apply required transformations.
 stg_order_df = spark.table(f"wwi_stg.{stg_table_name}") \
     .drop(f"{table_name}_key", "last_modified_when") \
     .drop("wwi_city_id", "wwi_customer_id", "wwi_stock_item_id", "wwi_salesperson_id", "wwi_picker_id") \
+    .withColumn("order_date_key", f.date_format("order_date_key", "yyyyMMdd").cast("bigint")) \
+    .withColumn("picked_date_key",
+        f.when(f.col("picked_date_key").isNotNull(), f.date_format("picked_date_key", "yyyyMMdd").cast("bigint"))
+    ) \
     .withColumn("unit_price", f.col("unit_price").cast("decimal(18,2)")) \
     .withColumn("tax_rate", f.col("tax_rate").cast("decimal(18,3)")) \
     .withColumn("total_excluding_tax", f.col("total_excluding_tax").cast("decimal(18,2)")) \

@@ -19,10 +19,11 @@ fct_table_name = f"fct_{table_name}"
 
 # COMMAND ----------
 
-# Drop columns not required for the insert operation and cast to appropriate data types.
+# Drop columns not required for the insert operation and apply required transformations.
 stg_transaction_df = spark.table(f"wwi_stg.{stg_table_name}") \
     .drop(f"{table_name}_key", "last_modified_when") \
     .drop("wwi_customer_id", "wwi_bill_to_customer_id", "wwi_supplier_id", "wwi_transaction_type_id", "wwi_payment_method_id") \
+    .withColumn("date_key", f.date_format("date_key", "yyyyMMdd").cast("bigint")) \
     .withColumn("total_excluding_tax", f.col("total_excluding_tax").cast("decimal(18,2)")) \
     .withColumn("tax_amount", f.col("tax_amount").cast("decimal(18,2)")) \
     .withColumn("total_including_tax", f.col("total_including_tax").cast("decimal(18,2)")) \

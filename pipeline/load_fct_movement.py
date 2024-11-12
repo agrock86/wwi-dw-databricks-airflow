@@ -20,8 +20,10 @@ pk_column_name = f"wwi_stock_item_transaction_id"
 
 # COMMAND ----------
 
-# Drop columns not required for the merge operation.
-stg_movement_df = spark.table(f"wwi_stg.{stg_table_name}").drop("movement_key", "transaction_occured_when")
+# Drop columns not required for the insert operation and apply required transformations.
+stg_movement_df = spark.table(f"wwi_stg.{stg_table_name}") \
+    .drop("movement_key", "transaction_occured_when") \
+    .withColumn("date_key", f.date_format("date_key", "yyyyMMdd").cast("bigint"))
 
 # COMMAND ----------
 

@@ -4,6 +4,27 @@ create schema if not exists wwi_dw;
 
 use schema wwi_dw;
 
+drop table if exists wwi_dim.dim_date;
+create table wwi_dim.dim_date
+(
+    date date,
+    date_key bigint,
+    day_number int,
+    day string,
+    month string,
+    short_month string,
+    calendar_month_number int,
+    calendar_month_label string,
+    calendar_year int,
+    calendar_year_label string,
+    fiscal_month_number int,
+    fiscal_month_label string,
+    fiscal_year int,
+    fiscal_year_label string,
+    iso_week_number int,
+    primary key(date_key)
+);
+
 drop table if exists wwi_dim.dim_city;
 create table wwi_dim.dim_city
 (

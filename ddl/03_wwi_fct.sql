@@ -7,7 +7,7 @@ use schema wwi_fct;
 drop table if exists wwi_fct.fct_movement;
 create table wwi_fct.fct_movement
 (
-    date_key date not null,
+    date_key bigint not null,
     stock_item_key bigint not null,
     customer_key bigint,
     supplier_key bigint,
@@ -17,6 +17,7 @@ create table wwi_fct.fct_movement
     wwi_purchase_order_id int,
     quantity int not null,
     lineage_key bigint not null,
+    constraint fk_fct_movement_date_key foreign key (date_key) references wwi_dim.dim_date(date_key),
     constraint fk_fct_movement_stock_item_key foreign key (stock_item_key) references wwi_dim.dim_stock_item(stock_item_key),
     constraint fk_fct_movement_customer_key foreign key (customer_key) references wwi_dim.dim_customer(customer_key),
     constraint fk_fct_movement_supplier_key foreign key (supplier_key) references wwi_dim.dim_supplier(supplier_key),
@@ -29,8 +30,8 @@ create table wwi_fct.fct_order
     city_key bigint not null,
     customer_key bigint not null,
     stock_item_key bigint not null,
-    order_date_key date not null,
-    picked_date_key date,
+    order_date_key bigint not null,
+    picked_date_key bigint,
     salesperson_key bigint not null,
     picker_key bigint,
     wwi_order_id int not null,
@@ -44,6 +45,8 @@ create table wwi_fct.fct_order
     tax_amount decimal(18, 2) not null,
     total_including_tax decimal(18, 2) not null,
     lineage_key bigint not null,
+    constraint fk_fct_order_order_date_key foreign key (order_date_key) references wwi_dim.dim_date(date_key),
+    constraint fk_fct_order_picked_date_key foreign key (picked_date_key) references wwi_dim.dim_date(date_key),
     constraint fk_fct_order_city_key foreign key (city_key) references wwi_dim.dim_city(city_key),
     constraint fk_fct_order_customer_key foreign key (customer_key) references wwi_dim.dim_customer(customer_key),
     constraint fk_fct_order_stock_item_key foreign key (stock_item_key) references wwi_dim.dim_stock_item(stock_item_key),
@@ -55,7 +58,7 @@ partitioned by (order_date_key);
 drop table if exists wwi_fct.fct_purchase;
 create table wwi_fct.fct_purchase
 (
-    date_key date not null,
+    date_key bigint not null,
     supplier_key bigint not null,
     stock_item_key bigint not null,
     wwi_purchase_order_id int,
@@ -65,6 +68,7 @@ create table wwi_fct.fct_purchase
     package string not null,
     is_order_finalized boolean not null,
     lineage_key bigint not null,
+    constraint fk_fct_purchase_date_key foreign key (date_key) references wwi_dim.dim_date(date_key),
     constraint fk_fct_purchase_supplier_key foreign key (supplier_key) references wwi_dim.dim_supplier(supplier_key),
     constraint fk_fct_purchase_stock_item_key foreign key (stock_item_key) references wwi_dim.dim_stock_item(stock_item_key)
 )
@@ -77,8 +81,8 @@ create table wide_world_importers_dw.wwi_fct.fct_sale
     customer_key bigint not null,
     bill_customer_key bigint not null,
     stock_item_key bigint not null,
-    invoice_date_key date not null,
-    delivery_date_key date,
+    invoice_date_key bigint not null,
+    delivery_date_key bigint,
     salesperson_key bigint not null,
     wwi_invoice_id int not null,
     description string not null,
@@ -93,6 +97,8 @@ create table wide_world_importers_dw.wwi_fct.fct_sale
     total_dry_items int not null,
     total_chiller_items int not null,
     lineage_key bigint not null,
+    constraint fk_fct_sale_invoice_date_key foreign key (invoice_date_key) references wwi_dim.dim_date(date_key),
+    constraint fk_fct_sale_delivery_date_key foreign key (delivery_date_key) references wwi_dim.dim_date(date_key),
     constraint fk_fct_sale_city_key foreign key (city_key) references wwi_dim.dim_city(city_key),
     constraint fk_fct_sale_customer_key foreign key (customer_key) references wwi_dim.dim_customer(customer_key),
     constraint fk_fct_sale_bill_customer_key foreign key (bill_customer_key) references wwi_dim.dim_customer(customer_key),
@@ -118,7 +124,7 @@ create table wide_world_importers_dw.wwi_fct.fct_stock_holding
 drop table if exists wide_world_importers_dw.wwi_fct.fct_transaction;
 create table wide_world_importers_dw.wwi_fct.fct_transaction
 (
-    date_key date not null,
+    date_key bigint not null,
     customer_key bigint,
     bill_customer_key bigint,
     supplier_key bigint,
@@ -135,6 +141,7 @@ create table wide_world_importers_dw.wwi_fct.fct_transaction
     outstanding_balance decimal(18, 2) not null,
     is_finalized boolean not null,
     lineage_key bigint not null,
+    constraint fk_fct_transaction_date_key foreign key (date_key) references wwi_dim.dim_date(date_key),
     constraint fk_fct_transaction_customer_key foreign key (customer_key) references wwi_dim.dim_customer(customer_key),
     constraint fk_fct_transaction_bill_customer_key foreign key (bill_customer_key) references wwi_dim.dim_customer(customer_key),
     constraint fk_fct_transaction_supplier_key foreign key (supplier_key) references wwi_dim.dim_supplier(supplier_key),
