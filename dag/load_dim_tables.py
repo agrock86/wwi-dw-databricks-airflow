@@ -7,8 +7,8 @@ from datetime import datetime, timedelta
 lib_folder_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..")
 sys.path.append(os.path.abspath(lib_folder_path))
 
-from airflow import DAG
-from airflow import Variable
+from airflow.models import DAG
+from airflow.models import Variable
 from airflow.providers.databricks.operators.databricks import DatabricksRunNowOperator
 
 dag_name = os.path.basename(__file__).replace(".pyc", "").replace(".py", "")
