@@ -53,5 +53,4 @@ with DAG(
         task_id="load_dim_date",
         databricks_conn_id=databricks_conn_id,
         job_name="load_dim_date"
-        # job_id="175112069104028"
     )
