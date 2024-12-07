@@ -9,6 +9,7 @@ sys.path.append(os.path.abspath(lib_folder_path))
 
 from airflow.models import DAG
 from airflow.models import Variable
+from airflow.operators.python_operator import PythonOperator
 from airflow.providers.databricks.operators.databricks import DatabricksRunNowOperator
 
 dag_name = os.path.basename(__file__).replace(".pyc", "").replace(".py", "")
@@ -41,6 +42,12 @@ default_args = {
 
 log = logging.getLogger(__name__)
 
+def calculate_cutoff_time(**kwargs):
+    current_utc_time = datetime.now(datetime.timezone.utc)
+    target_etl_cutoff_time = (current_utc_time - timedelta(minutes=5)).strftime("%Y-%m-%d %H:%M:%S.%f")
+
+    return target_etl_cutoff_time
+
 with DAG(
     dag_name,
     default_args=default_args,
@@ -49,6 +56,12 @@ with DAG(
     catchup=False,
     tags=default_args["tags"]
 ) as dag:
+    calculate_cutoff_time_task = PythonOperator(
+        task_id="calculate_cutoff_time",
+        python_callable=calculate_cutoff_time,
+        provide_context=True
+    )
+
     load_dim_date_task = DatabricksRunNowOperator(
         task_id="load_dim_date",
         databricks_conn_id=databricks_conn_id,
