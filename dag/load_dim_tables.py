@@ -67,3 +67,12 @@ with DAG(
         databricks_conn_id=databricks_conn_id,
         job_name="load_dim_date"
     )
+
+    load_dim_city_task = DatabricksRunNowOperator(
+        task_id="load_dim_city",
+        databricks_conn_id=databricks_conn_id,
+        job_name="load_dim_city",
+        job_parameters={"target_etl_cutoff_time": "{{ ti.xcom_pull(task_ids='calculate_cutoff_time') }}"}
+    )
+
+    calculate_cutoff_time_task >> load_dim_date_task >> load_dim_date_task
