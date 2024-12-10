@@ -75,4 +75,4 @@ with DAG(
         job_parameters={"target_etl_cutoff_time": "{{ ti.xcom_pull(task_ids='calculate_cutoff_time') }}"}
     )
 
-    calculate_cutoff_time_task >> load_dim_date_task >> load_dim_date_task
+    calculate_cutoff_time_task >> load_dim_date_task >> load_dim_city_task
