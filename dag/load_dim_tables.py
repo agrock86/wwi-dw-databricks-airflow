@@ -75,4 +75,48 @@ with DAG(
         job_parameters={"target_etl_cutoff_time": "{{ ti.xcom_pull(task_ids='calculate_cutoff_time') }}"}
     )
 
-    calculate_cutoff_time_task >> load_dim_date_task >> load_dim_city_task
+    load_dim_customer_task = DatabricksRunNowOperator(
+        task_id="load_dim_customer",
+        databricks_conn_id=databricks_conn_id,
+        job_name="load_dim_customer",
+        job_parameters={"target_etl_cutoff_time": "{{ ti.xcom_pull(task_ids='calculate_cutoff_time') }}"}
+    )
+
+    load_dim_employee_task = DatabricksRunNowOperator(
+        task_id="load_dim_employee",
+        databricks_conn_id=databricks_conn_id,
+        job_name="load_dim_employee",
+        job_parameters={"target_etl_cutoff_time": "{{ ti.xcom_pull(task_ids='calculate_cutoff_time') }}"}
+    )
+
+    load_dim_payment_method_task = DatabricksRunNowOperator(
+        task_id="load_dim_payment_method",
+        databricks_conn_id=databricks_conn_id,
+        job_name="load_dim_payment_method",
+        job_parameters={"target_etl_cutoff_time": "{{ ti.xcom_pull(task_ids='calculate_cutoff_time') }}"}
+    )
+
+    load_dim_stock_item_task = DatabricksRunNowOperator(
+        task_id="load_dim_stock_item",
+        databricks_conn_id=databricks_conn_id,
+        job_name="load_dim_stock_item",
+        job_parameters={"target_etl_cutoff_time": "{{ ti.xcom_pull(task_ids='calculate_cutoff_time') }}"}
+    )
+
+    load_dim_supplier_task = DatabricksRunNowOperator(
+        task_id="load_dim_supplier",
+        databricks_conn_id=databricks_conn_id,
+        job_name="load_dim_supplier",
+        job_parameters={"target_etl_cutoff_time": "{{ ti.xcom_pull(task_ids='calculate_cutoff_time') }}"}
+    )
+
+    load_dim_transaction_type_task = DatabricksRunNowOperator(
+        task_id="load_dim_transaction_type",
+        databricks_conn_id=databricks_conn_id,
+        job_name="load_dim_transaction_type",
+        job_parameters={"target_etl_cutoff_time": "{{ ti.xcom_pull(task_ids='calculate_cutoff_time') }}"}
+    )
+
+    calculate_cutoff_time_task >> load_dim_date_task >> load_dim_city_task >> load_dim_customer_task
+    load_dim_customer_task >> load_dim_employee_task >> load_dim_payment_method_task >> load_dim_stock_item_task
+    load_dim_stock_item_task >> load_dim_supplier_task >> load_dim_transaction_type_task
