@@ -2,7 +2,7 @@ import os
 import sys
 import logging
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 lib_folder_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..")
 sys.path.append(os.path.abspath(lib_folder_path))
@@ -43,7 +43,7 @@ default_args = {
 log = logging.getLogger(__name__)
 
 def calculate_cutoff_time(**kwargs):
-    current_utc_time = datetime.now(datetime.timezone.utc)
+    current_utc_time = datetime.now(timezone.utc)
     target_etl_cutoff_time = (current_utc_time - timedelta(minutes=5)).strftime("%Y-%m-%d %H:%M:%S.%f")
 
     return target_etl_cutoff_time
