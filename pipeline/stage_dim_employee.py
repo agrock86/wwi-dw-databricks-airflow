@@ -12,7 +12,7 @@ from pyspark.sql import functions as f
 # COMMAND ----------
 
 
-table_name = dbutils.widgets.get("table_name")
+table_name = "employee"
 target_etl_cutoff_time = dbutils.widgets.get("target_etl_cutoff_time")
 
 stg_table_name = f"stg_{table_name}"
