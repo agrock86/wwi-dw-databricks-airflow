@@ -1,6 +1,6 @@
 # Databricks notebook source
 # MAGIC %sql
-# MAGIC use catalog wide_world_importers_dw
+# MAGIC use catalog wide_world_importers_dwh;
 
 # COMMAND ----------
 
@@ -12,16 +12,16 @@ from delta.tables import DeltaTable
 # COMMAND ----------
 
 def generate_lineage_key(table_name, new_cutoff_time):
-    data_load_started_when = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
+    data_load_started = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
 
     spark.sql(f"""
         INSERT INTO wwi_stg.etl_lineage(data_load_started, table_name, data_load_completed, was_successful, source_system_cutoff_time)
-        VALUES('{data_load_started_when}', '{table_name}', NULL, 0, '{new_cutoff_time}')"""
+        VALUES('{data_load_started}', '{table_name}', NULL, 0, '{new_cutoff_time}')"""
     )
 
     etl_lineage_df = spark.table("wwi_stg.etl_lineage") \
         .filter(f.col("table_name") == table_name) \
-        .filter(f.col("data_load_started") == f.to_timestamp(f.lit(data_load_started_when), "yyyy-MM-dd HH:mm:ss.SSSSSS")) \
+        .filter(f.col("data_load_started") == f.to_timestamp(f.lit(data_load_started), "yyyy-MM-dd HH:mm:ss.SSSSSS")) \
         .orderBy(f.col("lineage_key").desc()) \
         .limit(1)
 

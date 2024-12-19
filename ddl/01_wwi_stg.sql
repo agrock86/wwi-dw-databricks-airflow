@@ -1,4 +1,4 @@
-use catalog wide_world_importers_dw;
+use catalog wide_world_importers_dwh;
 
 create schema if not exists wwi_stg;
 

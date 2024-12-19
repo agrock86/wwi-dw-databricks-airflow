@@ -1,6 +1,6 @@
-use catalog wide_world_importers_dw;
+use catalog wide_world_importers_dwh;
 
-create schema if not exists wwi_dw;
+create schema if not exists wwi_fct;
 
 use schema wwi_fct;
 
@@ -74,8 +74,8 @@ create table wwi_fct.fct_purchase
 )
 partitioned by (date_key);
 
-drop table if exists wide_world_importers_dw.wwi_fct.fct_sale;
-create table wide_world_importers_dw.wwi_fct.fct_sale
+drop table if exists wwi_fct.fct_sale;
+create table wwi_fct.fct_sale
 (
     city_key bigint not null,
     customer_key bigint not null,
@@ -107,8 +107,8 @@ create table wide_world_importers_dw.wwi_fct.fct_sale
 )
 partitioned by (invoice_date_key);
 
-drop table if exists wide_world_importers_dw.wwi_fct.fct_stock_holding;
-create table wide_world_importers_dw.wwi_fct.fct_stock_holding
+drop table if exists wwi_fct.fct_stock_holding;
+create table wwi_fct.fct_stock_holding
 (
     stock_item_key bigint not null,
     quantity_on_hand int not null,
@@ -121,8 +121,8 @@ create table wide_world_importers_dw.wwi_fct.fct_stock_holding
     constraint fk_fct_stock_holding_stock_item_key foreign key (stock_item_key) references wwi_dim.dim_stock_item(stock_item_key)
 );
 
-drop table if exists wide_world_importers_dw.wwi_fct.fct_transaction;
-create table wide_world_importers_dw.wwi_fct.fct_transaction
+drop table if exists wwi_fct.fct_transaction;
+create table wwi_fct.fct_transaction
 (
     date_key bigint not null,
     customer_key bigint,
