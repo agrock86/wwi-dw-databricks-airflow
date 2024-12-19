@@ -1,1 +1,0 @@
-drop catalog wide_world_importers_dw cascade
