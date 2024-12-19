@@ -1,8 +1,8 @@
-use catalog wide_world_importers_dw;
+use catalog wide_world_importers_dwh;
 
-create schema if not exists wwi_dw;
+create schema if not exists wwi_dim;
 
-use schema wwi_dw;
+use schema wwi_dim;
 
 drop table if exists wwi_dim.dim_date;
 create table wwi_dim.dim_date
