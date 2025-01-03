@@ -1,0 +1,1 @@
+az network bastion ssh --name "wwi-migration-bst-aflw-dev" --resource-group "wwi-migration-rg-dev" --target-ip-address "10.0.0.4" --auth-type "ssh-key" --username "azureuser" --ssh-key "D:\projects\wwi-dw-databricks-airflow\res\wwi-migration-keyp-aflw-dev.pem" -- -L 8080:127.0.0.1:8080
