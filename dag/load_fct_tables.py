@@ -65,37 +65,43 @@ with DAG(
     load_fct_movement_task = DatabricksRunNowOperator(
         task_id="load_fct_movement",
         databricks_conn_id=databricks_conn_id,
-        job_name="load_fct_movement"
+        job_name="load_fct_movement",
+        job_parameters={"target_etl_cutoff_time": "{{ ti.xcom_pull(task_ids='calculate_cutoff_time') }}"}
     )
 
     load_fct_order_task = DatabricksRunNowOperator(
         task_id="load_fct_order",
         databricks_conn_id=databricks_conn_id,
-        job_name="load_fct_order"
+        job_name="load_fct_order",
+        job_parameters={"target_etl_cutoff_time": "{{ ti.xcom_pull(task_ids='calculate_cutoff_time') }}"}
     )
 
     load_fct_purchase_task = DatabricksRunNowOperator(
         task_id="load_fct_purchase",
         databricks_conn_id=databricks_conn_id,
-        job_name="load_fct_purchase"
+        job_name="load_fct_purchase",
+        job_parameters={"target_etl_cutoff_time": "{{ ti.xcom_pull(task_ids='calculate_cutoff_time') }}"}
     )
 
     load_fct_sale_task = DatabricksRunNowOperator(
         task_id="load_fct_sale",
         databricks_conn_id=databricks_conn_id,
-        job_name="load_fct_sale"
+        job_name="load_fct_sale",
+        job_parameters={"target_etl_cutoff_time": "{{ ti.xcom_pull(task_ids='calculate_cutoff_time') }}"}
     )
 
     load_fct_stock_holding_task = DatabricksRunNowOperator(
         task_id="load_fct_stock_holding",
         databricks_conn_id=databricks_conn_id,
-        job_name="load_fct_stock_holding"
+        job_name="load_fct_stock_holding",
+        job_parameters={"target_etl_cutoff_time": "{{ ti.xcom_pull(task_ids='calculate_cutoff_time') }}"}
     )
 
     load_fct_transaction_task = DatabricksRunNowOperator(
         task_id="load_fct_transaction",
         databricks_conn_id=databricks_conn_id,
-        job_name="load_fct_transaction"
+        job_name="load_fct_transaction",
+        job_parameters={"target_etl_cutoff_time": "{{ ti.xcom_pull(task_ids='calculate_cutoff_time') }}"}
     )
 
     calculate_cutoff_time_task >> load_fct_movement_task >> load_fct_order_task

@@ -4,6 +4,8 @@ create schema if not exists wwi_fct;
 
 use schema wwi_fct;
 
+set spark.databricks.delta.retentionDurationCheck.enabled = false;
+
 drop table if exists wwi_fct.fct_movement;
 create table wwi_fct.fct_movement
 (
@@ -23,6 +25,8 @@ create table wwi_fct.fct_movement
     constraint fk_fct_movement_supplier_key foreign key (supplier_key) references wwi_dim.dim_supplier(supplier_key),
     constraint fk_fct_movement_transaction_type_key foreign key (transaction_type_key) references wwi_dim.dim_transaction_type(transaction_type_key)
 ) partitioned by (date_key);
+
+vacuum wwi_fct.fct_movement retain 0 hours;
 
 drop table if exists wwi_fct.fct_order;
 create table wwi_fct.fct_order
@@ -55,6 +59,8 @@ create table wwi_fct.fct_order
 )
 partitioned by (order_date_key);
 
+vacuum wwi_fct.fct_order retain 0 hours;
+
 drop table if exists wwi_fct.fct_purchase;
 create table wwi_fct.fct_purchase
 (
@@ -73,6 +79,8 @@ create table wwi_fct.fct_purchase
     constraint fk_fct_purchase_stock_item_key foreign key (stock_item_key) references wwi_dim.dim_stock_item(stock_item_key)
 )
 partitioned by (date_key);
+
+vacuum wwi_fct.fct_purchase retain 0 hours;
 
 drop table if exists wwi_fct.fct_sale;
 create table wwi_fct.fct_sale
@@ -107,6 +115,8 @@ create table wwi_fct.fct_sale
 )
 partitioned by (invoice_date_key);
 
+vacuum wwi_fct.fct_sale retain 0 hours;
+
 drop table if exists wwi_fct.fct_stock_holding;
 create table wwi_fct.fct_stock_holding
 (
@@ -120,6 +130,8 @@ create table wwi_fct.fct_stock_holding
     lineage_key bigint not null,
     constraint fk_fct_stock_holding_stock_item_key foreign key (stock_item_key) references wwi_dim.dim_stock_item(stock_item_key)
 );
+
+vacuum wwi_fct.fct_stock_holding retain 0 hours;
 
 drop table if exists wwi_fct.fct_transaction;
 create table wwi_fct.fct_transaction
@@ -149,3 +161,5 @@ create table wwi_fct.fct_transaction
     constraint fk_fct_transaction_payment_method_key foreign key (payment_method_key) references wwi_dim.dim_payment_method(payment_method_key)
 )
 partitioned by (date_key);
+
+vacuum wwi_fct.fct_transaction retain 0 hours;
