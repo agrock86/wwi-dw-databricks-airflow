@@ -4,6 +4,8 @@ create schema if not exists wwi_dim;
 
 use schema wwi_dim;
 
+set spark.databricks.delta.retentionDurationCheck.enabled = false;
+
 drop table if exists wwi_dim.dim_date;
 create table wwi_dim.dim_date
 (
@@ -25,6 +27,8 @@ create table wwi_dim.dim_date
     primary key(date_key)
 );
 
+vacuum wwi_dim.dim_date retain 0 hours;
+
 drop table if exists wwi_dim.dim_city;
 create table wwi_dim.dim_city
 (
@@ -45,6 +49,8 @@ create table wwi_dim.dim_city
 	primary key(city_key)
 );
 
+vacuum wwi_dim.dim_city retain 0 hours;
+
 drop table if exists wwi_dim.dim_customer;
 create table wwi_dim.dim_customer
 (
@@ -62,6 +68,8 @@ create table wwi_dim.dim_customer
 	primary key(customer_key)
 );
 
+vacuum wwi_dim.dim_customer retain 0 hours;
+
 drop table if exists wwi_dim.dim_employee;
 create table wwi_dim.dim_employee
 (
@@ -77,6 +85,8 @@ create table wwi_dim.dim_employee
 	primary key(employee_key)
 );
 
+vacuum wwi_dim.dim_employee retain 0 hours;
+
 drop table if exists wwi_dim.dim_payment_method;
 create table wwi_dim.dim_payment_method
 (
@@ -88,6 +98,8 @@ create table wwi_dim.dim_payment_method
 	lineage_key int not null,
 	primary key(payment_method_key)
 );
+
+vacuum wwi_dim.dim_payment_method retain 0 hours;
 
 drop table if exists wwi_dim.dim_stock_item;
 create table wwi_dim.dim_stock_item
@@ -115,6 +127,8 @@ create table wwi_dim.dim_stock_item
 	primary key(stock_item_key)
 );
 
+vacuum wwi_dim.dim_stock_item retain 0 hours;
+
 drop table if exists wwi_dim.dim_supplier;
 create table wwi_dim.dim_supplier
 (
@@ -132,6 +146,8 @@ create table wwi_dim.dim_supplier
 	primary key(supplier_key)
 );
 
+vacuum wwi_dim.dim_supplier retain 0 hours;
+
 drop table if exists wwi_dim.dim_transaction_type;
 create table wwi_dim.dim_transaction_type
 (
@@ -144,4 +160,4 @@ create table wwi_dim.dim_transaction_type
 	primary key(transaction_type_key)
 );
 
-
+vacuum wwi_dim.dim_transaction_type retain 0 hours;
