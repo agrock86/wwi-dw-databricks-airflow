@@ -1,0 +1,50 @@
+resources:
+  jobs:
+    load_dim_supplier:
+      name: load_dim_supplier
+      tasks:
+        - task_key: stage_dim_supplier
+          notebook_task:
+            notebook_path: pipeline/stage_dim_supplier
+            source: GIT
+          job_cluster_key: Job_cluster
+          max_retries: 2
+          min_retry_interval_millis: 180000
+        - task_key: load_dim_supplier
+          depends_on:
+            - task_key: stage_dim_supplier
+          notebook_task:
+            notebook_path: pipeline/load_dim_supplier
+            source: GIT
+          job_cluster_key: Job_cluster
+          max_retries: 2
+          min_retry_interval_millis: 180000
+      job_clusters:
+        - job_cluster_key: Job_cluster
+          new_cluster:
+            cluster_name: ""
+            spark_version: 14.3.x-scala2.12
+            spark_conf:
+              spark.master: local[*, 4]
+              spark.databricks.cluster.profile: singleNode
+            azure_attributes:
+              first_on_demand: 1
+              availability: ON_DEMAND_AZURE
+              spot_bid_max_price: -1
+            node_type_id: Standard_F4
+            driver_node_type_id: Standard_F4
+            custom_tags:
+              ResourceClass: SingleNode
+            enable_elastic_disk: true
+            data_security_mode: SINGLE_USER
+            runtime_engine: STANDARD
+            num_workers: 0
+      git_source:
+        git_url: https://github.com/agrock86/wwi-dw-databricks-airflow.git
+        git_provider: gitHub
+        git_branch: main
+      queue:
+        enabled: true
+      parameters:
+        - name: target_etl_cutoff_time
+          default: 2013-01-01 00:00:00.000000
