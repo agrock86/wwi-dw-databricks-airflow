@@ -1,9 +1,9 @@
 targetScope = 'subscription'
 
-param project string
-param environment string
 param default_location string
 param deployment_id string
+param project string
+param environment string
 
 resource rg_main 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: '${project}-rg-main-${environment}'

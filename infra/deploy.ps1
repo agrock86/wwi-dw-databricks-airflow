@@ -1,15 +1,23 @@
-$deployment_id = Get-Date -Format 'yyyyMMddHHmmss'
-$deployment_name = "$project-dply-$deployment_id-$environment"
-$template_file = 'main.bicep'
+$template_file = "main.bicep"
+$default_location = "eastus"
+$deployment_id = Get-Date -Format "yyyyMMddHHmmss"
+$project = "wwi-migration2"
+$environment = "dev"
 
-$project = 'wwi-migration2'
-$environment = 'dev'
-$default_location = 'eastus'
+$deployment_name = "$project-dply-$deployment_id-$environment"
+
+Connect-AzAccount
+
+$context = Get-AzSubscription -SubscriptionName "analytics-sub-dev"
+Set-AzContext $context
+
+Write-Output "Deployment name: $deployment_name"
 
 New-AzSubscriptionDeployment `
-  -Name $deployment_name `
-  -Location $default_location `
   -TemplateFile $template_file `
-  -project $project `
-  -environment $environment `
+  -Location $default_location `
+  -Name $deployment_name `
   -default_location $default_location `
+  -deployment_id $deployment_id `
+  -project $project `
+  -environment $environment
