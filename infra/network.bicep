@@ -3,13 +3,14 @@ param environment string
 
 var default_location = resourceGroup().location
 
-resource vnet_data 'Microsoft.Network/virtualNetworks@2024-01-01' = {
+resource vnet_etl 'Microsoft.Network/virtualNetworks@2024-01-01' = {
   location: default_location
-  name: '${project}-vnet-data-${environment}'
+  name: '${project}-vnet-etl-${environment}'
   properties: {
     addressSpace: {
       addressPrefixes: [
         '10.0.0.0/16'
+        '10.1.0.0/16'
         '10.179.0.0/16'
       ]
     }
@@ -19,6 +20,7 @@ resource vnet_data 'Microsoft.Network/virtualNetworks@2024-01-01' = {
       enforcement: 'AllowUnencrypted'
     }
     subnets: [
+      // subnets must be defined here to enforce sequential creation order; otherwise it will error out.
       {
         name: '${project}-snet-data-${environment}'
         properties: {
@@ -60,8 +62,6 @@ resource vnet_data 'Microsoft.Network/virtualNetworks@2024-01-01' = {
             {
               locations: [
                 default_location
-                // 'westus'
-                // 'westus3'
               ]
               service: 'Microsoft.Storage'
             }
@@ -90,12 +90,31 @@ resource vnet_data 'Microsoft.Network/virtualNetworks@2024-01-01' = {
             {
               locations: [
                 default_location
-                // 'westus'
-                // 'westus3'
               ]
               service: 'Microsoft.Storage'
             }
           ]
+        }
+      }
+      {
+        name: '${project}-snet-etl-${environment}'
+        properties: {
+          addressPrefix: '10.1.0.0/24'
+          delegations: []
+          privateEndpointNetworkPolicies: 'Disabled'
+          privateLinkServiceNetworkPolicies: 'Enabled'
+        }
+      }
+      {
+        name: '${project}-snet-etl-bastion-${environment}'
+        properties: {
+          addressPrefix: '10.1.1.0/26'
+          delegations: []
+          networkSecurityGroup: {
+            id: nseg_etl_bastion.id
+          }
+          privateEndpointNetworkPolicies: 'Disabled'
+          privateLinkServiceNetworkPolicies: 'Enabled'
         }
       }
     ]
@@ -260,42 +279,6 @@ resource nseg_adb 'Microsoft.Network/networkSecurityGroups@2024-01-01' = {
   }
 }
 
-resource vnet_etl 'Microsoft.Network/virtualNetworks@2024-01-01' = {
-  location: default_location
-  name: '${project}-vnet-etl-${environment}'
-  properties: {
-    addressSpace: {
-      addressPrefixes: [
-        '10.1.0.0/16'
-      ]
-    }
-    enableDdosProtection: false
-    subnets: [
-      {
-        name: '${project}-snet-etl-${environment}'
-        properties: {
-          addressPrefix: '10.1.0.0/24'
-          delegations: []
-          privateEndpointNetworkPolicies: 'Disabled'
-          privateLinkServiceNetworkPolicies: 'Enabled'
-        }
-      }
-      {
-        name: '${project}-snet-etl-bastion-${environment}'
-        properties: {
-          addressPrefix: '10.1.1.0/26'
-          delegations: []
-          networkSecurityGroup: {
-            id: nseg_etl_bastion.id
-          }
-          privateEndpointNetworkPolicies: 'Disabled'
-          privateLinkServiceNetworkPolicies: 'Enabled'
-        }
-      }
-    ]
-  }
-}
-
 resource nseg_etl_bastion 'Microsoft.Network/networkSecurityGroups@2024-01-01' = {
   location: default_location
   name: '${project}-nseg-etl-bastion-${environment}'
@@ -451,62 +434,3 @@ resource nseg_etl_bastion 'Microsoft.Network/networkSecurityGroups@2024-01-01' =
     }
   }
 }
-
-resource vnetp_data_etl_dev 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2024-01-01' = {
-  name: '${project}-vnetp-data-etl-${environment}'
-  parent: vnet_data
-  properties: {
-    allowForwardedTraffic: false
-    allowGatewayTransit: false
-    allowVirtualNetworkAccess: true
-    doNotVerifyRemoteGateways: false
-    peerCompleteVnets: true
-    peeringState: 'Connected'
-    peeringSyncLevel: 'FullyInSync'
-    remoteAddressSpace: {
-      addressPrefixes: [
-        '10.1.0.0/16'
-      ]
-    }
-    remoteVirtualNetwork: {
-      id: vnet_etl.id
-    }
-    remoteVirtualNetworkAddressSpace: {
-      addressPrefixes: [
-        '10.1.0.0/16'
-      ]
-    }
-    useRemoteGateways: false
-  }
-}
-
-resource vnetp_etl_data_dev 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2024-01-01' = {
-  name: '${project}-vnetp-etl-data-${environment}'
-  parent: vnet_etl
-  properties: {
-    allowForwardedTraffic: false
-    allowGatewayTransit: false
-    allowVirtualNetworkAccess: true
-    doNotVerifyRemoteGateways: false
-    peerCompleteVnets: true
-    peeringState: 'Connected'
-    peeringSyncLevel: 'FullyInSync'
-    remoteAddressSpace: {
-      addressPrefixes: [
-        '10.0.0.0/16'
-        '10.179.0.0/16'
-      ]
-    }
-    remoteVirtualNetwork: {
-      id: vnet_data.id
-    }
-    remoteVirtualNetworkAddressSpace: {
-      addressPrefixes: [
-        '10.0.0.0/16'
-        '10.179.0.0/16'
-      ]
-    }
-    useRemoteGateways: false
-  }
-}
-
