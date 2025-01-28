@@ -3,7 +3,7 @@ $default_location = "eastus"
 $deployment_id = Get-Date -Format "yyyyMMddHHmmss"
 $project = "wwi-migration2"
 $environment = "dev"
-$admin_password = ConvertTo-SecureString "xi6Z&Wendn*8aMF2" -AsPlainText -Force
+$admin_password = ConvertTo-SecureString "xi6ZWendn8aMF2" -AsPlainText -Force # Use only letters and numbers to avoid issues with scaping special characters.
 
 $deployment_name = "$project-dply-$deployment_id-$environment"
 
@@ -16,7 +16,6 @@ Write-Output "Deployment name: $deployment_name"
 
 New-AzSubscriptionDeployment `
   -TemplateFile $template_file `
-  -Mode Complete `
   -Location $default_location `
   -Name $deployment_name `
   -default_location $default_location `

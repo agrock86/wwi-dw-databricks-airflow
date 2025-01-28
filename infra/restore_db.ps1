@@ -1,31 +1,42 @@
+# TO-DO: add parameter project and remove hardcoded 'wwi-migration' value.
 param (
     [Parameter(Mandatory=$true)]
-    [string]$resource_group_name,
+    [string]$project,
+    [Parameter(Mandatory=$true)]
+    [string]$environment,
     [Parameter(Mandatory=$true)]
     [string]$server_name,
     [Parameter(Mandatory=$true)]
+    [string]$db_name,
+    [Parameter(Mandatory=$true)]
     [string]$admin_login,
     [Parameter(Mandatory=$true)]
-    [SecureString]$admin_password,
+    [string]$admin_password,
     [Parameter(Mandatory=$true)]
-    [string]$storage_account_name
+    [string]$backup_storage_account
 )
-$db_name = 'WideWorldImporters'
-$storage_uri = 'https://$storage_account_name.blob.core.windows.net/wwi-migration/WideWorldImporters.bacpac'
+$storage_uri = 'https://$backup_storage_account.blob.core.windows.net/$project/$db.bacpac'
 
-Import-AzSqlDatabase `
--ResourceGroupName $resource_group_name `
--ServerName $server_name `
--DatabaseName $db_name `
--StorageKeyType StorageAccessKey `
--StorageUri $storage_uri `
--AuthenticationType Sql `
--SqlAdministratorCredentials (New-Object System.Management.Automation.PSCredential($admin_login, (ConvertTo-SecureString $admin_password -AsPlainText -Force)))
+$import_request = New-AzSqlDatabaseImport -ResourceGroupName $resource_group_name `
+    -ServerName $server_name `
+    -DatabaseName $db_name `
+    -DatabaseMaxSizeBytes 32GB `
+    -StorageKeyType "StorageAccessKey" `
+    -StorageKey $(Get-AzStorageAccountKey -ResourceGroupName "common-rg-dev" -StorageAccountName $backup_storage_account).Value[0] `
+    -StorageUri $storage_uri `
+    -Edition "Free" `
+    -ServiceObjectiveName "GP_S_Gen5" `
+    -AdministratorLogin $admin_login `
+    -AdministratorLoginPassword $(ConvertTo-SecureString -String $admin_password -AsPlainText -Force)
 
-# $importRequest = New-AzSqlDatabaseImport -ResourceGroupName $resource_group_name `
-#     -ServerName $server_name `
-#     -DatabaseName $db_name `
-#     -DatabaseMaxSizeBytes 32GB `
-#     -StorageKeyType "StorageAccessKey" `
-#     -StorageKey $(Get-AzStorageAccountKey -ResourceGroupName $resource_group_name -StorageAccountName $storage_account_name).Value[0] `
-#     -StorageUri $storage_uri -Edition "Free" -ServiceObjectiveName "P6" -AdministratorLogin "<userId>" -AdministratorLoginPassword $(ConvertTo-SecureString -String "<password>" -AsPlainText -Force)
+# Check import status and wait for the import to complete
+$import_status = Get-AzSqlDatabaseImportExportStatus -OperationStatusLink $import_request.OperationStatusLink
+[Console]::Write("Importing")
+while ($import_status.Status -eq "InProgress")
+{
+    $import_status = Get-AzSqlDatabaseImportExportStatus -OperationStatusLink $import_request.OperationStatusLink
+    [Console]::Write(".")
+    Start-Sleep -s 10
+}
+[Console]::WriteLine("")
+$import_status

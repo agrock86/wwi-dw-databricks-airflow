@@ -72,7 +72,7 @@ resource files_backup 'Microsoft.Storage/storageAccounts/fileservices@2023-05-01
 
 resource blob_backup 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-05-01' = {
   parent: blobs_backup
-  name: 'wwi-migration2'
+  name: 'wwi-migration'
   properties: {
     immutableStorageWithVersioning: {
       enabled: false
