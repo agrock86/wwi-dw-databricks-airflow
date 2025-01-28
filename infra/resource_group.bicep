@@ -12,7 +12,9 @@ resource rlea_admin 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   name: guid(resourceGroup().id, uami_admin.name, 'Contributor')
   properties: {
     principalId: uami_admin.properties.principalId
-    principalType: 'ServicePrincipal' // if not set, assigment will be added before managed identity above is ready and it will error out.
+    // principalType property is required to prevent role assigment from being executed
+    // before managed identity is ready.
+    principalType: 'ServicePrincipal'
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'b24988ac-6180-42a0-ab88-20f7382dd24c')
   }
 }

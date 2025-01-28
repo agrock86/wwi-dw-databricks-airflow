@@ -32,8 +32,6 @@ resource vnet_etl 'Microsoft.Network/virtualNetworks@2024-01-01' = {
             {
               locations: [
                 default_location
-                // 'westus'
-                // 'westus3'
               ]
               service: 'Microsoft.Storage'
             }

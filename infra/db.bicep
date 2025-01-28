@@ -5,7 +5,7 @@ param admin_password string
 
 var default_location = resourceGroup().location
 var admin_login = 'sysadmin'
-var backup_storage_account = 'commonstbackup270f06edev'
+var backup_storage_account = 'commonstbackup270f06e${environment}'
 
 resource uami_admin 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-30' existing = {
   name: '${project}-uami-admin-${environment}'
@@ -73,6 +73,6 @@ resource sqldb_wwi_oltp 'Microsoft.Sql/servers/databases@2023-08-01-preview' = {
       retentionInterval: 'PT1H'
       forceUpdateTag: '1'
       scriptContent: loadTextContent('./restore_db.ps1')
-      arguments: '-project ${project} -environment ${environment} -server_name ${sqlsrv_wwi_oltp.name} -db_name ${sqldb_wwi_oltp.name} -admin_login ${admin_login} -admin_password ${admin_password} -backup_storage_account "${backup_storage_account}"' // there is no way to pass a parameter as a secure string, so a normal string is used for the password.
+      arguments: '-project ${project} -environment ${environment} -server_name ${sqlsrv_wwi_oltp.name} -db_name ${sqldb_wwi_oltp.name} -admin_login ${admin_login} -admin_password ${admin_password} -backup_storage_account "${backup_storage_account}"'
     }
   }
