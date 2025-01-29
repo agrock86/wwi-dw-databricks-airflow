@@ -18,8 +18,9 @@ param (
 # $storage_uri = "https://${backup_storage_account}.blob.core.windows.net/${project}/${db_name}.bacpac"
 $storage_uri = "https://${backup_storage_account}.blob.core.windows.net/wwi-migration/${db_name}.bacpac"
 $resource_group_name = "${project}-rg-${environment}"
+$etl_login = 'etl_app'
 
-$import_request = New-AzSqlDatabaseImport -ResourceGroupName $resource_group_name `
+New-AzSqlDatabaseImport -ResourceGroupName $resource_group_name `
     -ServerName $server_name `
     -DatabaseName $db_name `
     -DatabaseMaxSizeBytes 32GB `
@@ -30,3 +31,22 @@ $import_request = New-AzSqlDatabaseImport -ResourceGroupName $resource_group_nam
     -ServiceObjectiveName "GP_S_Gen5" `
     -AdministratorLogin $admin_login `
     -AdministratorLoginPassword $(ConvertTo-SecureString -String $admin_password -AsPlainText -Force)
+
+# Create SQL login for the ETL app.
+$sql_command = @"
+USE master;
+GO
+
+CREATE LOGIN ${etl_login} WITH PASSWORD = '$admin_password';
+GO
+
+USE ${db_name};
+GO
+
+CREATE USER ${etl_login} FOR LOGIN ${etl_login};
+GO
+
+ALTER ROLE db_datareader ADD MEMBER ${etl_login};
+"@
+
+Invoke-SqlCmd -ServerInstance "$server_name.database.windows.net" -Database $db_name -Username $admin_login -Password $admin_login -Query $sql_command

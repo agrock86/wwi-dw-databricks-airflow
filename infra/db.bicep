@@ -4,7 +4,7 @@ param environment string
 param admin_password string
 
 var default_location = resourceGroup().location
-var admin_login = 'sysadmin'
+var admin_login = 'sys_admin'
 var backup_storage_account = 'commonstbackup270f06e${environment}'
 
 resource uami_admin 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-30' existing = {
