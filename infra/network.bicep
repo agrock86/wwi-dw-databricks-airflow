@@ -1,11 +1,11 @@
 param project string
-param environment string
+param env string
 
 var default_location = resourceGroup().location
 
 resource vnet_etl 'Microsoft.Network/virtualNetworks@2024-01-01' = {
   location: default_location
-  name: '${project}-vnet-etl-${environment}'
+  name: '${project}-vnet-etl-${env}'
   properties: {
     addressSpace: {
       addressPrefixes: [
@@ -22,7 +22,7 @@ resource vnet_etl 'Microsoft.Network/virtualNetworks@2024-01-01' = {
     subnets: [
       // subnets must be defined here to enforce sequential creation order; otherwise it will error out.
       {
-        name: '${project}-snet-data-${environment}'
+        name: '${project}-snet-data-${env}'
         properties: {
           addressPrefix: '10.0.0.0/24'
           delegations: []
@@ -39,12 +39,12 @@ resource vnet_etl 'Microsoft.Network/virtualNetworks@2024-01-01' = {
         }
       }
       {
-        name: '${project}-snet-adb-private-${environment}'
+        name: '${project}-snet-adb-private-${env}'
         properties: {
           addressPrefix: '10.179.0.0/18'
           delegations: [
             {
-              name: '${project}-snetdel-adb-private-${environment}'
+              name: '${project}-snetdel-adb-private-${env}'
               properties: {
                 serviceName: 'Microsoft.Databricks/workspaces'
               }
@@ -67,12 +67,12 @@ resource vnet_etl 'Microsoft.Network/virtualNetworks@2024-01-01' = {
         }
       }
       {
-        name: '${project}-snet-adb-public-${environment}'
+        name: '${project}-snet-adb-public-${env}'
         properties: {
           addressPrefix: '10.179.64.0/18'
           delegations: [
             {
-              name: '${project}-snetdel-adb-public-${environment}'
+              name: '${project}-snetdel-adb-public-${env}'
               properties: {
                 serviceName: 'Microsoft.Databricks/workspaces'
               }
@@ -95,7 +95,7 @@ resource vnet_etl 'Microsoft.Network/virtualNetworks@2024-01-01' = {
         }
       }
       {
-        name: '${project}-snet-etl-${environment}'
+        name: '${project}-snet-airflow-${env}'
         properties: {
           addressPrefix: '10.1.0.0/24'
           delegations: []
@@ -104,12 +104,12 @@ resource vnet_etl 'Microsoft.Network/virtualNetworks@2024-01-01' = {
         }
       }
       {
-        name: '${project}-snet-etl-bastion-${environment}'
+        name: '${project}-snet-airflow-bastion-${env}'
         properties: {
           addressPrefix: '10.1.1.0/26'
           delegations: []
           networkSecurityGroup: {
-            id: nseg_etl_bastion.id
+            id: nseg_airflow_bastion.id
           }
           privateEndpointNetworkPolicies: 'Disabled'
           privateLinkServiceNetworkPolicies: 'Enabled'
@@ -121,11 +121,11 @@ resource vnet_etl 'Microsoft.Network/virtualNetworks@2024-01-01' = {
 
 resource nseg_adb 'Microsoft.Network/networkSecurityGroups@2024-01-01' = {
   location: default_location
-  name: '${project}-nseg-adb-${environment}'
+  name: '${project}-nseg-adb-${env}'
   properties: {}
 
   resource nsegrul_adb_worker_inbound 'securityRules' = {
-    name: '${project}-nsegrul-adb-worker-inbound-${environment}'
+    name: 'WorkerToWorkerInbound'
     properties: {
       access: 'Allow'
       description: 'Required for worker nodes communication within a cluster.'
@@ -144,7 +144,7 @@ resource nseg_adb 'Microsoft.Network/networkSecurityGroups@2024-01-01' = {
   }
 
   resource nsegrul_adb_plane_ssh 'securityRules' = {
-    name: '${project}-nsegrul-adb-plane-ssh-${environment}'
+    name: 'ControlPlaneToWorkerSsh'
     properties: {
       access: 'Allow'
       description: 'Required for Databricks control plane management of worker nodes.'
@@ -163,7 +163,7 @@ resource nseg_adb 'Microsoft.Network/networkSecurityGroups@2024-01-01' = {
   }
 
   resource nsegrul_adb_plane_worker 'securityRules' = {
-    name: '${project}-nsegrul-adb-plane-worker-${environment}'
+    name: 'ControlPlaneToWorkerProxy'
     properties: {
       access: 'Allow'
       description: 'Required for Databricks control plane communication with worker nodes.'
@@ -182,7 +182,7 @@ resource nseg_adb 'Microsoft.Network/networkSecurityGroups@2024-01-01' = {
   }
 
   resource nsegrul_adb_worker_outbound 'securityRules' = {
-    name: '${project}-nsegrul-adb-worker-outbound-${environment}'
+    name: 'WorkerToWorkerOutbound'
     properties: {
       access: 'Allow'
       description: 'Required for worker nodes communication within a cluster.'
@@ -201,7 +201,7 @@ resource nseg_adb 'Microsoft.Network/networkSecurityGroups@2024-01-01' = {
   }
 
   resource nsegrul_adb_worker_plane 'securityRules' = {
-    name: '${project}-nsegrul-adb-worker-plane-${environment}'
+    name: 'WorkerToControlPlane'
     properties: {
       access: 'Allow'
       description: 'Required for workers communication with Databricks control plane.'
@@ -220,7 +220,7 @@ resource nseg_adb 'Microsoft.Network/networkSecurityGroups@2024-01-01' = {
   }
 
   resource nsegrul_adb_worker_sql 'securityRules' = {
-    name: '${project}-nsegrul-adb-worker-sql-${environment}'
+    name: 'WorkerToSql'
     properties: {
       access: 'Allow'
       description: 'Required for workers communication with Azure SQL services.'
@@ -239,7 +239,7 @@ resource nseg_adb 'Microsoft.Network/networkSecurityGroups@2024-01-01' = {
   }
 
   resource nsegrul_adb_worker_adsl 'securityRules' = {
-    name: '${project}-nsegrul-adb-worker-adsl-${environment}'
+    name: 'WorkerToAdsl'
     properties: {
       access: 'Allow'
       description: 'Required for workers communication with Azure Storage services.'
@@ -258,7 +258,7 @@ resource nseg_adb 'Microsoft.Network/networkSecurityGroups@2024-01-01' = {
   }
 
   resource nsegrul_adb_worker_ehub 'securityRules' = {
-    name: '${project}-nsegrul-adb-worker-ehub-${environment}'
+    name: 'WorkerToEventHub'
     properties: {
       access: 'Allow'
       description: 'Required for worker communication with Azure Eventhub services.'
@@ -277,13 +277,57 @@ resource nseg_adb 'Microsoft.Network/networkSecurityGroups@2024-01-01' = {
   }
 }
 
-resource nseg_etl_bastion 'Microsoft.Network/networkSecurityGroups@2024-01-01' = {
+resource nseg_airflow 'Microsoft.Network/networkSecurityGroups@2024-01-01' = {
   location: default_location
-  name: '${project}-nseg-etl-bastion-${environment}'
+  name: '${project}-nseg-airflow-${env}'
+  properties: {}
+
+  resource nsegrul_airflow_ssh_rdp_inbound 'securityRules' = {
+    name: 'SshRdpInbound'
+    properties: {
+      access: 'Allow'
+      destinationAddressPrefix: 'VirtualNetwork'
+      destinationAddressPrefixes: []
+      destinationPortRanges: [
+        '22'
+        '3389'
+      ]
+      direction: 'Inbound'
+      priority: 100
+      protocol: '*'
+      sourceAddressPrefix: '10.0.1.0/26'
+      sourceAddressPrefixes: []
+      sourcePortRange: '*'
+      sourcePortRanges: []
+    }
+  }
+
+  resource nsegrul_airflow_http_inbound 'securityRules' = {
+    name: 'HttpInbound'
+    properties: {
+      access: 'Allow'
+      destinationAddressPrefix: 'VirtualNetwork'
+      destinationAddressPrefixes: []
+      destinationPortRange: '8080'
+      destinationPortRanges: []
+      direction: 'Inbound'
+      priority: 110
+      protocol: '*'
+      sourceAddressPrefix: '10.0.1.0/26'
+      sourceAddressPrefixes: []
+      sourcePortRange: '*'
+      sourcePortRanges: []
+    }
+  }
+}
+
+resource nseg_airflow_bastion 'Microsoft.Network/networkSecurityGroups@2024-01-01' = {
+  location: default_location
+  name: '${project}-nseg-airflow-bastion-${env}'
   properties: {}
   
   resource nsegrul_etl_bastion_ssh 'securityRules' = {
-    name: '${project}-nsegrul-etl-bastion-ssh-${environment}'
+    name: 'SshRdpOutbound'
     properties: {
       access: 'Allow'
       destinationAddressPrefix: 'VirtualNetwork'
@@ -303,7 +347,7 @@ resource nseg_etl_bastion 'Microsoft.Network/networkSecurityGroups@2024-01-01' =
   }
 
   resource nsegrul_etl_bastion_azure 'securityRules' = {
-    name: '${project}-nsegrul-etl-bastion-azure-${environment}'
+    name: 'AzureCloudOutbound'
     properties: {
       access: 'Allow'
       destinationAddressPrefix: 'AzureCloud'
@@ -321,7 +365,7 @@ resource nseg_etl_bastion 'Microsoft.Network/networkSecurityGroups@2024-01-01' =
   }
   
   resource nsegrul_etl_bastion_outbound 'securityRules' = {
-    name: '${project}-nsegrul-etl-bastion-outbound-${environment}'
+    name: 'BastionCommOutbound'
     properties: {
       access: 'Allow'
       destinationAddressPrefix: 'VirtualNetwork'
@@ -341,7 +385,7 @@ resource nseg_etl_bastion 'Microsoft.Network/networkSecurityGroups@2024-01-01' =
   }
 
   resource nsegrul_etl_bastion_http_inbound 'securityRules' = {
-    name: '${project}-nsegrul-etl-bastion-http-inbound-${environment}'
+    name: 'HttpsInbound'
     properties: {
       access: 'Allow'
       destinationAddressPrefix: '*'
@@ -359,7 +403,7 @@ resource nseg_etl_bastion 'Microsoft.Network/networkSecurityGroups@2024-01-01' =
   }
 
   resource nsegrul_etl_bastion_load_balancer 'securityRules' = {
-    name: '${project}-nsegrul-etl-bastion-load-balancer-${environment}'
+    name: 'LoadBalancerInbound'
     properties: {
       access: 'Allow'
       destinationAddressPrefix: '*'
@@ -377,7 +421,7 @@ resource nseg_etl_bastion 'Microsoft.Network/networkSecurityGroups@2024-01-01' =
   }
   
   resource nsegrul_etl_bastion_gateway_manager 'securityRules' = {
-    name: '${project}-nsegrul-etl-bastion-gateway-manager-${environment}'
+    name: 'GatewayManagerInbound'
     properties: {
       access: 'Allow'
       destinationAddressPrefix: '*'
@@ -395,7 +439,7 @@ resource nseg_etl_bastion 'Microsoft.Network/networkSecurityGroups@2024-01-01' =
   }
   
   resource nsegrul_etl_bastion_inbound 'securityRules' = {
-    name: '${project}-nsegrul-etl-bastion-inbound-${environment}'
+    name: 'BastionHostCommInbound'
     properties: {
       access: 'Allow'
       destinationAddressPrefix: 'VirtualNetwork'
@@ -415,7 +459,7 @@ resource nseg_etl_bastion 'Microsoft.Network/networkSecurityGroups@2024-01-01' =
   }
 
   resource nsegrul_etl_bastion_http_outbound 'securityRules' = {
-    name: '${project}-nsegrul-etl-bastion-http-outbound-${environment}'
+    name: 'AnyHttpOutbound'
     properties: {
       access: 'Allow'
       destinationAddressPrefix: 'Internet'

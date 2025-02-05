@@ -1,10 +1,10 @@
 param project string
-param environment string
+param env string
 
 var default_location = resourceGroup().location
 
 resource st_backup 'Microsoft.Storage/storageAccounts@2023-05-01' = {
-  name: '${project}stbackup${environment}'
+  name: '${project}stbackup${env}'
   location: default_location
   properties: {
     minimumTlsVersion: 'TLS1_2'
@@ -13,7 +13,7 @@ resource st_backup 'Microsoft.Storage/storageAccounts@2023-05-01' = {
     allowSharedKeyAccess: true
     defaultToOAuthAuthentication: false
     accessTier: 'Cold'
-    publicNetworkAccess: 'Disabled'
+    publicNetworkAccess: 'Enabled'
     allowCrossTenantReplication: false
     networkAcls: {
       bypass: 'AzureServices'

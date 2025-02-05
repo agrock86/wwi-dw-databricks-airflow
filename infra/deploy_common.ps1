@@ -1,9 +1,9 @@
 $template_file = "common.bicep"
 $deployment_id = Get-Date -Format "yyyyMMddHHmmss"
 $project = "common270f06e"
-$environment = "dev"
+$env = "dev"
 
-$deployment_name = "$project-dply-$deployment_id-$environment"
+$deployment_name = "$project-dply-$deployment_id-$env"
 
 Connect-AzAccount
 
@@ -19,4 +19,4 @@ New-AzResourceGroupDeployment `
   -Mode Complete `
   -Name $deployment_name `
   -project $project `
-  -environment $environment
+  -env $env

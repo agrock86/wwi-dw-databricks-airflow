@@ -1,10 +1,10 @@
 param project string
-param environment string
+param env string
 
 var default_location = resourceGroup().location
 
 resource uami_admin 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-30' = {
-  name: '${project}-uami-admin-${environment}'
+  name: '${project}-uami-admin-${env}'
   location: default_location
 }
 

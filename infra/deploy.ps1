@@ -1,11 +1,11 @@
 $template_file = "main.bicep"
 $default_location = "eastus"
 $project = "wwi-migration2"
-$environment = "dev"
+$env = "dev"
 # Use only letters and numbers for password to avoid issues with scaping special characters.
 $admin_password = ConvertTo-SecureString "xi6ZWendn8aMF2" -AsPlainText -Force
 $deployment_id = Get-Date -Format "yyyyMMddHHmmss"
-$deployment_name = "$project-dply-$deployment_id-$environment"
+$deployment_name = "$project-dply-$deployment_id-$env"
 
 Connect-AzAccount
 
@@ -21,5 +21,5 @@ New-AzSubscriptionDeployment `
   -deployment_id $deployment_id `
   -default_location $default_location `
   -project $project `
-  -environment $environment `
+  -env $env `
   -admin_password $admin_password
