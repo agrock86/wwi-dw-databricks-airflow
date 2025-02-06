@@ -3,6 +3,7 @@ param env string
 param admin_login string
 @secure()
 param admin_password string
+param client_ip string
 
 var default_location = resourceGroup().location
 var backup_storage_account = 'common270f06estbackup${env}'
@@ -26,9 +27,27 @@ resource sqlsrv_wwi_oltp 'Microsoft.Sql/servers@2023-08-01-preview' = {
       tenantId: '5f751a8a-2fcf-4979-9e68-b20f298c27ba'
     }
     minimalTlsVersion: '1.2'
-    publicNetworkAccess: 'Enabled' // TO-DO: remove public access.
+    publicNetworkAccess: 'Enabled'
     restrictOutboundNetworkAccess: 'Disabled'
     version: '12.0'
+  }
+}
+
+resource fiwr_wwi_oltp_client 'Microsoft.Sql/servers/firewallRules@2024-05-01-preview' = {
+  parent: sqlsrv_wwi_oltp
+  name: 'ClientIPAddress'
+  properties: {
+    startIpAddress: client_ip
+    endIpAddress: client_ip
+  }
+}
+
+resource fiwr_wwi_oltp_azure 'Microsoft.Sql/servers/firewallRules@2024-05-01-preview' = {
+  parent: sqlsrv_wwi_oltp
+  name: 'AllowAllWindowsAzureIps'
+  properties: {
+    startIpAddress: '0.0.0.0'
+    endIpAddress: '0.0.0.0'
   }
 }
 
@@ -75,7 +94,8 @@ resource dplys_wwi_oltp_restore 'Microsoft.Resources/deploymentScripts@2020-10-0
     scriptContent: loadTextContent('./restore_db.ps1')
     arguments: '-project ${project} -env ${env} -server_name ${sqlsrv_wwi_oltp.name} -db_name ${sqldb_wwi_oltp.name} -admin_login ${admin_login} -admin_password ${admin_password} -backup_storage_account "${backup_storage_account}"'
   }
+  dependsOn: [
+    fiwr_wwi_oltp_client
+    fiwr_wwi_oltp_azure
+  ]
 }
-
-// TO-DO: automatically add the local machine IP address as a firewall rule exception
-// TO-DO: automatically add Azure services as a firewall rule exception?

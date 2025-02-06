@@ -6,8 +6,8 @@ param admin_password string
 
 var default_location = resourceGroup().location
 
-resource vnet_etl 'Microsoft.Network/virtualNetworks@2024-01-01' existing = {
-   name: '${project}-vnet-etl-${env}'
+resource vnet_main 'Microsoft.Network/virtualNetworks@2024-01-01' existing = {
+   name: '${project}-vnet-main-${env}'
 }
 
 resource snet_airflow 'Microsoft.Network/virtualNetworks/subnets@2024-01-01' existing = {
@@ -39,7 +39,7 @@ resource nic_airflow 'Microsoft.Network/networkInterfaces@2024-01-01' = {
           privateIPAddressVersion: 'IPv4'
           privateIPAllocationMethod: 'Dynamic'
           subnet: {
-            id: resourceId('Microsoft.Network/virtualNetworks/subnets', vnet_etl.name, snet_airflow.name)
+            id: resourceId('Microsoft.Network/virtualNetworks/subnets', vnet_main.name, snet_airflow.name)
           }
         }
         type: 'Microsoft.Network/networkInterfaces/ipConfigurations'
@@ -51,35 +51,6 @@ resource nic_airflow 'Microsoft.Network/networkInterfaces@2024-01-01' = {
     nicType: 'Standard'
   }
 }
-
-// resource disk_airflow 'Microsoft.Compute/disks@2024-03-02' = {
-//   name: '${project}-disk-airflow-${env}'
-//   location: default_location
-//   sku: {
-//     name: 'Standard_LRS'
-//   }
-//   properties: {
-//     osType: 'Linux'
-//     hyperVGeneration: 'V2'
-//     supportsHibernation: true
-//     supportedCapabilities: {
-//       diskControllerTypes: 'SCSI, NVMe'
-//       acceleratedNetwork: true
-//       architecture: 'x64'
-//     }
-//     creationData: {
-//       createOption: 'Empty'
-//     }
-//     diskSizeGB: 30
-//     diskIOPSReadWrite: 500
-//     diskMBpsReadWrite: 60
-//     encryption: {
-//       type: 'EncryptionAtRestWithPlatformKey'
-//     }
-//     networkAccessPolicy: 'AllowAll'
-//     publicNetworkAccess: 'Enabled' // TO-DO: disable public network access.
-//   }
-// }
 
 resource vm_airflow 'Microsoft.Compute/virtualMachines@2024-07-01' = {
   name: '${project}-vm-airflow-${env}'

@@ -1,5 +1,6 @@
 param project string
 param env string
+param client_ip string
 
 var default_location = resourceGroup().location
 
@@ -18,7 +19,12 @@ resource st_backup 'Microsoft.Storage/storageAccounts@2023-05-01' = {
     networkAcls: {
       bypass: 'AzureServices'
       defaultAction: 'Deny'
-      ipRules: []
+      ipRules: [
+        {
+          value: client_ip
+          action: 'Allow'
+        }
+      ]
     }
     dnsEndpointType: 'Standard'
     largeFileSharesState: 'Enabled'

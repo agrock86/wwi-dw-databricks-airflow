@@ -6,6 +6,7 @@ param project string
 param env string
 @secure()
 param admin_password string
+param client_ip string
 
 var admin_login = 'sys_admin'
 
@@ -56,6 +57,7 @@ module db_module './db.bicep' = {
     env: env
     admin_login: admin_login
     admin_password: admin_password
+    client_ip: client_ip
   }
 }
 

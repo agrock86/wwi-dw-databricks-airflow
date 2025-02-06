@@ -4,6 +4,7 @@ $project = "common270f06e"
 $env = "dev"
 
 $deployment_name = "$project-dply-$deployment_id-$env"
+$client_ip = (Invoke-WebRequest -Uri "https://api64.ipify.org").Content
 
 Connect-AzAccount
 
@@ -16,7 +17,7 @@ Write-Output "Deployment name: $deployment_name"
 
 New-AzResourceGroupDeployment `
   -TemplateFile $template_file `
-  -Mode Complete `
   -Name $deployment_name `
   -project $project `
-  -env $env
+  -env $env `
+  -client_ip $client_ip

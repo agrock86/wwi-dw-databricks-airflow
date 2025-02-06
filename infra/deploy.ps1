@@ -6,6 +6,7 @@ $env = "dev"
 $admin_password = ConvertTo-SecureString "xi6ZWendn8aMF2" -AsPlainText -Force
 $deployment_id = Get-Date -Format "yyyyMMddHHmmss"
 $deployment_name = "$project-dply-$deployment_id-$env"
+$client_ip = (Invoke-WebRequest -Uri "https://api64.ipify.org").Content
 
 Connect-AzAccount
 
@@ -22,4 +23,5 @@ New-AzSubscriptionDeployment `
   -default_location $default_location `
   -project $project `
   -env $env `
-  -admin_password $admin_password
+  -admin_password $admin_password `
+  -client_ip $client_ip

@@ -3,9 +3,9 @@ param env string
 
 var default_location = resourceGroup().location
 
-resource vnet_etl 'Microsoft.Network/virtualNetworks@2024-01-01' = {
+resource vnet_main 'Microsoft.Network/virtualNetworks@2024-01-01' = {
   location: default_location
-  name: '${project}-vnet-etl-${env}'
+  name: '${project}-vnet-main-${env}'
   properties: {
     addressSpace: {
       addressPrefixes: [
@@ -36,6 +36,27 @@ resource vnet_etl 'Microsoft.Network/virtualNetworks@2024-01-01' = {
               service: 'Microsoft.Storage'
             }
           ]
+        }
+      }
+      {
+        name: '${project}-snet-airflow-${env}'
+        properties: {
+          addressPrefix: '10.1.0.0/24'
+          delegations: []
+          privateEndpointNetworkPolicies: 'Disabled'
+          privateLinkServiceNetworkPolicies: 'Enabled'
+        }
+      }
+      {
+        name: '${project}-snet-airflow-bastion-${env}'
+        properties: {
+          addressPrefix: '10.1.1.0/26'
+          delegations: []
+          networkSecurityGroup: {
+            id: nseg_airflow_bastion.id
+          }
+          privateEndpointNetworkPolicies: 'Disabled'
+          privateLinkServiceNetworkPolicies: 'Enabled'
         }
       }
       {
@@ -92,27 +113,6 @@ resource vnet_etl 'Microsoft.Network/virtualNetworks@2024-01-01' = {
               service: 'Microsoft.Storage'
             }
           ]
-        }
-      }
-      {
-        name: '${project}-snet-airflow-${env}'
-        properties: {
-          addressPrefix: '10.1.0.0/24'
-          delegations: []
-          privateEndpointNetworkPolicies: 'Disabled'
-          privateLinkServiceNetworkPolicies: 'Enabled'
-        }
-      }
-      {
-        name: '${project}-snet-airflow-bastion-${env}'
-        properties: {
-          addressPrefix: '10.1.1.0/26'
-          delegations: []
-          networkSecurityGroup: {
-            id: nseg_airflow_bastion.id
-          }
-          privateEndpointNetworkPolicies: 'Disabled'
-          privateLinkServiceNetworkPolicies: 'Enabled'
         }
       }
     ]
@@ -476,3 +476,9 @@ resource nseg_airflow_bastion 'Microsoft.Network/networkSecurityGroups@2024-01-0
     }
   }
 }
+
+output vnet_main_id string = vnet_main.id
+output snet_data_id string = vnet_main.properties.subnets[0].id
+output snet_airflow_id string = vnet_main.properties.subnets[1].id
+
+output nseg_airflow_id string = nseg_airflow.id
