@@ -1,4 +1,4 @@
-$template_file = "common.bicep"
+$template_file = "common_backup_st.bicep"
 $deployment_id = Get-Date -Format "yyyyMMddHHmmss"
 $project = "common270f06e"
 $env = "dev"

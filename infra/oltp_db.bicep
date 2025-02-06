@@ -6,11 +6,6 @@ param admin_password string
 param client_ip string
 
 var default_location = resourceGroup().location
-var backup_storage_account = 'common270f06estbackup${env}'
-
-resource uami_admin 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-30' existing = {
-  name: '${project}-uami-admin-${env}'
-}
 
 resource sqlsrv_wwi_oltp 'Microsoft.Sql/servers@2023-08-01-preview' = {
   location: default_location
@@ -77,27 +72,6 @@ resource sqldb_wwi_oltp 'Microsoft.Sql/servers/databases@2023-08-01-preview' = {
   }
 }
 
-resource dplys_wwi_oltp_restore 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
-  name: '${project}-dplys-wwi-oltp-restore-${env}'
-  location: default_location
-  kind: 'AzurePowerShell'
-  identity: {
-    type: 'UserAssigned'
-    userAssignedIdentities: {
-      '${uami_admin.id}': {}
-    }
-  }
-  properties: {
-    azPowerShellVersion: '7.2'
-    retentionInterval: 'PT1H'
-    forceUpdateTag: '1'
-    scriptContent: loadTextContent('./restore_db.ps1')
-    arguments: '-project ${project} -env ${env} -server_name ${sqlsrv_wwi_oltp.name} -db_name ${sqldb_wwi_oltp.name} -admin_login ${admin_login} -admin_password ${admin_password} -backup_storage_account "${backup_storage_account}"'
-  }
-  dependsOn: [
-    fiwr_wwi_oltp_client
-    fiwr_wwi_oltp_azure
-  ]
-}
-
 output sqlsrv_wwi_oltp_id string = sqlsrv_wwi_oltp.id
+output sqlsrv_wwi_oltp_name string = sqlsrv_wwi_oltp.name
+output sqldb_wwi_oltp_name string = sqldb_wwi_oltp.name

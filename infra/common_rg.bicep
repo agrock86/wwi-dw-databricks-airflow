@@ -4,7 +4,7 @@ param env string
 // defined for the project's resource group.
 resource uami_admin 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-30' existing = {
   name: '${project}-uami-admin-${env}'
-  scope: resourceGroup('${project}-rg-${env}')
+  scope: resourceGroup('${project}-rg-main-${env}')
 }
 
 // defined for the common resource group.
