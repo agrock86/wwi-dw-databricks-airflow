@@ -99,3 +99,5 @@ resource dplys_wwi_oltp_restore 'Microsoft.Resources/deploymentScripts@2020-10-0
     fiwr_wwi_oltp_azure
   ]
 }
+
+output sqlsrv_wwi_oltp_id string = sqlsrv_wwi_oltp.id
