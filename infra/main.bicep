@@ -65,6 +65,7 @@ module dply_common_backup_st 'common_backup_st.bicep' = {
   scope: rg_common
   params: {
     env: env
+    public_network_access: 'Enabled'
   }
 }
 
@@ -93,6 +94,19 @@ module dply_airflow_vm './airflow_vm.bicep' = {
     admin_password: admin_password
     vnet_main: dply_main_vnet.outputs.vnet_main
   }
+}
+
+// disable public access to storage account with backup file.
+module dply_common_backup_st_2 'common_backup_st.bicep' = {
+  name: '${project}-dply-common-backup-st-${deployment_id}-2-${env}'
+  scope: rg_common
+  params: {
+    env: env
+    public_network_access: 'Disabled'
+  }
+  dependsOn: [
+    dply_oltp_db_restore
+  ]
 }
 
 //TO-DO: make the Azure SQL Server private after deployment

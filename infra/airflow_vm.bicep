@@ -7,6 +7,10 @@ param vnet_main object
 
 var default_location = resourceGroup().location
 
+resource _vnet_main 'Microsoft.Network/virtualNetworks@2024-01-01' existing = {
+  name: vnet_main.name
+}
+
 resource nseg_airflow 'Microsoft.Network/networkSecurityGroups@2024-01-01' = {
   location: default_location
   name: '${project}-nseg-airflow-${env}'
@@ -209,6 +213,7 @@ resource nseg_airflow_bastion 'Microsoft.Network/networkSecurityGroups@2024-01-0
 
 resource snet_airflow 'Microsoft.Network/virtualNetworks/subnets@2024-01-01' = {
   name: '${project}-snet-airflow-${env}'
+  parent: _vnet_main
   properties: {
     addressPrefix: '10.1.0.0/24'
     delegations: []
@@ -219,6 +224,7 @@ resource snet_airflow 'Microsoft.Network/virtualNetworks/subnets@2024-01-01' = {
 
 resource snet_airflow_bastion 'Microsoft.Network/virtualNetworks/subnets@2024-01-01' = {
   name: '${project}-snet-airflow-bastion-${env}'
+  parent: _vnet_main
   properties: {
     addressPrefix: '10.1.1.0/26'
     delegations: []
@@ -341,6 +347,20 @@ resource vm_airflow 'Microsoft.Compute/virtualMachines@2024-07-01' = {
           storageAccountType: 'Standard_LRS'
         }
       }
+    }
+  }
+}
+
+resource vmext_airflow 'Microsoft.Compute/virtualMachines/extensions@2024-07-01' = {
+  name: '${project}-vmext-airflow-${env}'
+  parent: vm_airflow
+  properties: {
+    publisher: 'Microsoft.Azure.Extensions'
+    type: 'CustomScript'
+    typeHandlerVersion: '2.1'
+    settings: {
+      fileUris: []
+      commandToExecute: 'sudo apt update && sudo apt install -y htop curl'
     }
   }
 }

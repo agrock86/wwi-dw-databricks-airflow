@@ -1,4 +1,5 @@
 param env string
+param public_network_access string
 
 var default_location = resourceGroup().location
 
@@ -12,7 +13,7 @@ resource st_backup 'Microsoft.Storage/storageAccounts@2023-05-01' = {
     allowSharedKeyAccess: true
     defaultToOAuthAuthentication: false
     accessTier: 'Cold'
-    publicNetworkAccess: 'Enabled'
+    publicNetworkAccess: public_network_access
     allowCrossTenantReplication: false
     networkAcls: {
       defaultAction: 'Allow'
