@@ -8,7 +8,6 @@ param env string
 param admin_password string
 param client_ip string
 
-var tenant_id = tenant().tenantId
 var admin_login = 'sys_admin'
 
 // common resource group with shared resources.
@@ -93,8 +92,6 @@ module dply_airflow_vm './airflow_vm.bicep' = {
     admin_login: admin_login
     admin_password: admin_password
     vnet_main: dply_main_vnet.outputs.vnet_main
-    snet_airflow: dply_main_vnet.outputs.snet_airflow
-    nseg_airflow: dply_main_vnet.outputs.nseg_airflow
   }
 }
 
