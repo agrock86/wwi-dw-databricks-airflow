@@ -69,20 +69,20 @@ module dply_common_backup_st 'common_backup_st.bicep' = {
   }
 }
 
-module dply_oltp_db_restore './oltp_db_restore.bicep' = {
-  name: '${project}-dply-oltp-db-restore-${deployment_id}-${env}'
-  scope: rg_main
-  params: {
-    project: project
-    env: env
-    admin_login: admin_login
-    admin_password: admin_password
-    sqlsrv_wwi_oltp: dply_oltp_db.outputs.sqlsrv_wwi_oltp
-    sqldb_wwi_oltp: dply_oltp_db.outputs.sqldb_wwi_oltp
-    uami_admin: dply_main_rg.outputs.uami_admin
-    st_backup: dply_common_backup_st.outputs.st_backup
-  }
-}
+// module dply_oltp_db_restore './oltp_db_restore.bicep' = {
+//   name: '${project}-dply-oltp-db-restore-${deployment_id}-${env}'
+//   scope: rg_main
+//   params: {
+//     project: project
+//     env: env
+//     admin_login: admin_login
+//     admin_password: admin_password
+//     sqlsrv_wwi_oltp: dply_oltp_db.outputs.sqlsrv_wwi_oltp
+//     sqldb_wwi_oltp: dply_oltp_db.outputs.sqldb_wwi_oltp
+//     uami_admin: dply_main_rg.outputs.uami_admin
+//     st_backup: dply_common_backup_st.outputs.st_backup
+//   }
+// }
 
 module dply_airflow_vm './airflow_vm.bicep' = {
   name: '${project}-dply-airflow-vm-${deployment_id}-${env}'
@@ -93,20 +93,22 @@ module dply_airflow_vm './airflow_vm.bicep' = {
     admin_login: admin_login
     admin_password: admin_password
     vnet_main: dply_main_vnet.outputs.vnet_main
+    snet_airflow: dply_main_vnet.outputs.snet_airflow
   }
 }
 
-// disable public access to storage account with backup file.
-module dply_common_backup_st_2 'common_backup_st.bicep' = {
-  name: '${project}-dply-common-backup-st-${deployment_id}-2-${env}'
-  scope: rg_common
-  params: {
-    env: env
-    public_network_access: 'Disabled'
-  }
-  dependsOn: [
-    dply_oltp_db_restore
-  ]
-}
+// // disable public access to storage account with backup file.
+// module dply_common_backup_st_2 'common_backup_st.bicep' = {
+//   name: '${project}-dply-common-backup-st-${deployment_id}-2-${env}'
+//   scope: rg_common
+//   params: {
+//     env: env
+//     public_network_access: 'Disabled'
+//   }
+//   dependsOn: [
+//     dply_oltp_db_restore
+//   ]
+// }
 
-//TO-DO: make the Azure SQL Server private after deployment
+// TO-DO: make the Azure SQL Server private after deployment
+// TO-DO: review wich nested resources really require a name like ${project}...${env}' or simple name

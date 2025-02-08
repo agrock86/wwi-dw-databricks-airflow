@@ -28,12 +28,6 @@ $storage_uri = "https://${backup_storage_account}.blob.core.windows.net/wwi-migr
 $resource_group_name = "${project}-rg-main-${env}"
 $etl_login = "etl_app"
 
-# $db = Get-AzSqlDatabase -ResourceGroupName $resource_group_name -ServerName $server_name -DatabaseName $db_name
-# if ($db) {
-#     [Console]::WriteLine("Database {0} already exists, removing ...", $db_name)
-#     Remove-AzSqlDatabase -ResourceGroupName $resource_group_name -ServerName $server_name -DatabaseName $db_name -Force
-# }
-
 $import_request = New-AzSqlDatabaseImport -ResourceGroupName $resource_group_name `
     -ServerName $server_name `
     -DatabaseName $db_name `

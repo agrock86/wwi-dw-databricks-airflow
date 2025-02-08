@@ -4,12 +4,9 @@ param admin_login string
 @secure()
 param admin_password string
 param vnet_main object
+param snet_airflow object
 
 var default_location = resourceGroup().location
-
-resource _vnet_main 'Microsoft.Network/virtualNetworks@2024-01-01' existing = {
-  name: vnet_main.name
-}
 
 resource nseg_airflow 'Microsoft.Network/networkSecurityGroups@2024-01-01' = {
   location: default_location
@@ -53,190 +50,6 @@ resource nseg_airflow 'Microsoft.Network/networkSecurityGroups@2024-01-01' = {
       sourcePortRanges: []
     }
   }
-}
-
-resource nseg_airflow_bastion 'Microsoft.Network/networkSecurityGroups@2024-01-01' = {
-  location: default_location
-  name: '${project}-nseg-airflow-bastion-${env}'
-  properties: {}
-  
-  resource nsegrul_etl_bastion_ssh 'securityRules' = {
-    name: 'SshRdpOutbound'
-    properties: {
-      access: 'Allow'
-      destinationAddressPrefix: 'VirtualNetwork'
-      destinationAddressPrefixes: []
-      destinationPortRanges: [
-        '22'
-        '3389'
-      ]
-      direction: 'Outbound'
-      priority: 100
-      protocol: '*'
-      sourceAddressPrefix: '*'
-      sourceAddressPrefixes: []
-      sourcePortRange: '*'
-      sourcePortRanges: []
-    }
-  }
-
-  resource nsegrul_etl_bastion_azure 'securityRules' = {
-    name: 'AzureCloudOutbound'
-    properties: {
-      access: 'Allow'
-      destinationAddressPrefix: 'AzureCloud'
-      destinationAddressPrefixes: []
-      destinationPortRange: '443'
-      destinationPortRanges: []
-      direction: 'Outbound'
-      priority: 110
-      protocol: 'TCP'
-      sourceAddressPrefix: '*'
-      sourceAddressPrefixes: []
-      sourcePortRange: '*'
-      sourcePortRanges: []
-    }
-  }
-  
-  resource nsegrul_etl_bastion_outbound 'securityRules' = {
-    name: 'BastionCommOutbound'
-    properties: {
-      access: 'Allow'
-      destinationAddressPrefix: 'VirtualNetwork'
-      destinationAddressPrefixes: []
-      destinationPortRanges: [
-        '8080'
-        '5701'
-      ]
-      direction: 'Outbound'
-      priority: 120
-      protocol: '*'
-      sourceAddressPrefix: 'VirtualNetwork'
-      sourceAddressPrefixes: []
-      sourcePortRange: '*'
-      sourcePortRanges: []
-    }
-  }
-
-  resource nsegrul_etl_bastion_http_inbound 'securityRules' = {
-    name: 'HttpsInbound'
-    properties: {
-      access: 'Allow'
-      destinationAddressPrefix: '*'
-      destinationAddressPrefixes: []
-      destinationPortRange: '443'
-      destinationPortRanges: []
-      direction: 'Inbound'
-      priority: 130
-      protocol: 'TCP'
-      sourceAddressPrefix: 'Internet'
-      sourceAddressPrefixes: []
-      sourcePortRange: '*'
-      sourcePortRanges: []
-    }
-  }
-
-  resource nsegrul_etl_bastion_load_balancer 'securityRules' = {
-    name: 'LoadBalancerInbound'
-    properties: {
-      access: 'Allow'
-      destinationAddressPrefix: '*'
-      destinationAddressPrefixes: []
-      destinationPortRange: '443'
-      destinationPortRanges: []
-      direction: 'Inbound'
-      priority: 150
-      protocol: 'TCP'
-      sourceAddressPrefix: 'AzureLoadBalancer'
-      sourceAddressPrefixes: []
-      sourcePortRange: '*'
-      sourcePortRanges: []
-    }
-  }
-  
-  resource nsegrul_etl_bastion_gateway_manager 'securityRules' = {
-    name: 'GatewayManagerInbound'
-    properties: {
-      access: 'Allow'
-      destinationAddressPrefix: '*'
-      destinationAddressPrefixes: []
-      destinationPortRange: '443'
-      destinationPortRanges: []
-      direction: 'Inbound'
-      priority: 160
-      protocol: 'TCP'
-      sourceAddressPrefix: 'GatewayManager'
-      sourceAddressPrefixes: []
-      sourcePortRange: '*'
-      sourcePortRanges: []
-    }
-  }
-  
-  resource nsegrul_etl_bastion_inbound 'securityRules' = {
-    name: 'BastionHostCommInbound'
-    properties: {
-      access: 'Allow'
-      destinationAddressPrefix: 'VirtualNetwork'
-      destinationAddressPrefixes: []
-      destinationPortRanges: [
-        '8080'
-        '5701'
-      ]
-      direction: 'Inbound'
-      priority: 170
-      protocol: '*'
-      sourceAddressPrefix: 'VirtualNetwork'
-      sourceAddressPrefixes: []
-      sourcePortRange: '*'
-      sourcePortRanges: []
-    }
-  }
-
-  resource nsegrul_etl_bastion_http_outbound 'securityRules' = {
-    name: 'AnyHttpOutbound'
-    properties: {
-      access: 'Allow'
-      destinationAddressPrefix: 'Internet'
-      destinationAddressPrefixes: []
-      destinationPortRange: '80'
-      destinationPortRanges: []
-      direction: 'Outbound'
-      priority: 180
-      protocol: '*'
-      sourceAddressPrefix: '*'
-      sourceAddressPrefixes: []
-      sourcePortRange: '*'
-      sourcePortRanges: []
-    }
-  }
-}
-
-resource snet_airflow 'Microsoft.Network/virtualNetworks/subnets@2024-01-01' = {
-  name: '${project}-snet-airflow-${env}'
-  parent: _vnet_main
-  properties: {
-    addressPrefix: '10.1.0.0/24'
-    delegations: []
-    privateEndpointNetworkPolicies: 'Disabled'
-    privateLinkServiceNetworkPolicies: 'Enabled'
-  }
-}
-
-resource snet_airflow_bastion 'Microsoft.Network/virtualNetworks/subnets@2024-01-01' = {
-  name: '${project}-snet-airflow-bastion-${env}'
-  parent: _vnet_main
-  properties: {
-    addressPrefix: '10.1.1.0/26'
-    delegations: []
-    networkSecurityGroup: {
-      id: nseg_airflow_bastion.id
-    }
-    privateEndpointNetworkPolicies: 'Disabled'
-    privateLinkServiceNetworkPolicies: 'Enabled'
-  }
-  dependsOn: [
-    snet_airflow // to guarantee sequential execution, since only 1 subnet can be provisioned at a time.
-  ]
 }
 
 resource nic_airflow 'Microsoft.Network/networkInterfaces@2024-01-01' = {
@@ -352,15 +165,18 @@ resource vm_airflow 'Microsoft.Compute/virtualMachines@2024-07-01' = {
 }
 
 resource vmext_airflow 'Microsoft.Compute/virtualMachines/extensions@2024-07-01' = {
-  name: '${project}-vmext-airflow-${env}'
+  location: default_location
+  name: 'docker_install'
   parent: vm_airflow
   properties: {
     publisher: 'Microsoft.Azure.Extensions'
     type: 'CustomScript'
     typeHandlerVersion: '2.1'
     settings: {
-      fileUris: []
-      commandToExecute: 'sudo apt update && sudo apt install -y htop curl'
+      fileUris: [
+        'https://raw.githubusercontent.com/agrock86/wwi-dw-databricks-airflow/refs/heads/main/infra/install_docker.sh'
+      ]
+      commandToExecute: 'sudo sh install_docker.sh'
     }
   }
 }
