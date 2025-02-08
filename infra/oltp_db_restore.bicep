@@ -5,13 +5,10 @@ param admin_login string
 param admin_password string
 param sqlsrv_wwi_oltp object
 param sqldb_wwi_oltp object
+param uami_admin object
 param st_backup object
 
 var default_location = resourceGroup().location
-
-resource uami_admin 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-30' existing = {
-  name: '${project}-uami-admin-${env}'
-}
 
 resource dplys_wwi_oltp_restore 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
   name: '${project}-dplys-wwi-oltp-restore-${env}'

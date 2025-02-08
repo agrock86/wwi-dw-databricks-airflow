@@ -65,10 +65,7 @@ module dply_common_backup_st 'common_backup_st.bicep' = {
   name: '${project}-dply-common-backup-st-${deployment_id}-${env}'
   scope: rg_common
   params: {
-    tenant_id: tenant_id
     env: env
-    access_rules_resource_id: dply_oltp_db.outputs.sqlsrv_wwi_oltp.id
-    client_ip: client_ip
   }
 }
 
@@ -82,6 +79,7 @@ module dply_oltp_db_restore './oltp_db_restore.bicep' = {
     admin_password: admin_password
     sqlsrv_wwi_oltp: dply_oltp_db.outputs.sqlsrv_wwi_oltp
     sqldb_wwi_oltp: dply_oltp_db.outputs.sqldb_wwi_oltp
+    uami_admin: dply_main_rg.outputs.uami_admin
     st_backup: dply_common_backup_st.outputs.st_backup
   }
 }

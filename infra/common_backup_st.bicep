@@ -1,7 +1,4 @@
-param tenant_id string
 param env string
-param access_rules_resource_id string
-param client_ip string
 
 var default_location = resourceGroup().location
 
@@ -18,20 +15,7 @@ resource st_backup 'Microsoft.Storage/storageAccounts@2023-05-01' = {
     publicNetworkAccess: 'Enabled'
     allowCrossTenantReplication: false
     networkAcls: {
-      bypass: 'AzureServices'
-      defaultAction: 'Deny'
-      ipRules: [
-        {
-          value: client_ip
-          action: 'Allow'
-        }
-      ]
-      resourceAccessRules: [
-        {
-          tenantId: tenant_id
-          resourceId: access_rules_resource_id
-        }
-      ]
+      defaultAction: 'Allow'
     }
     dnsEndpointType: 'Standard'
     largeFileSharesState: 'Enabled'
