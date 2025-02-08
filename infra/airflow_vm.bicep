@@ -3,20 +3,11 @@ param env string
 param admin_login string
 @secure()
 param admin_password string
+param vnet_main object
+param snet_airflow object
+param nseg_airflow object
 
 var default_location = resourceGroup().location
-
-resource vnet_main 'Microsoft.Network/virtualNetworks@2024-01-01' existing = {
-   name: '${project}-vnet-main-${env}'
-}
-
-resource snet_airflow 'Microsoft.Network/virtualNetworks/subnets@2024-01-01' existing = {
-  name: '${project}-snet-airflow-${env}'
-}
-
-resource nseg_airflow 'Microsoft.Network/networkSecurityGroups@2024-01-01' existing = {
-  name: '${project}-nseg-airflow-${env}'
-}
 
 resource nic_airflow 'Microsoft.Network/networkInterfaces@2024-01-01' = {
   location: default_location

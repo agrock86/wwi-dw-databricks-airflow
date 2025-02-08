@@ -477,8 +477,21 @@ resource nseg_airflow_bastion 'Microsoft.Network/networkSecurityGroups@2024-01-0
   }
 }
 
-output vnet_main_id string = vnet_main.id
-output snet_data_id string = vnet_main.properties.subnets[0].id
-output snet_airflow_id string = vnet_main.properties.subnets[1].id
+output vnet_main object = {
+  id: vnet_main.id
+  name: vnet_main.name
+}
 
-output nseg_airflow_id string = nseg_airflow.id
+output snet_data object = {
+  id: vnet_main.properties.subnets[0].id
+  name: vnet_main.properties.subnets[0].name
+}
+output snet_airflow object = {
+  id: vnet_main.properties.subnets[1].id
+  name: vnet_main.properties.subnets[1].name
+}
+
+output nseg_airflow object = {
+  id: nseg_airflow.id
+  name: nseg_airflow.name
+}

@@ -19,5 +19,9 @@ resource rlea_admin 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   }
 }
 
-output admin_managed_identity_id string = uami_admin.id
+output uami_admin object = {
+  id: uami_admin.id
+  name: uami_admin.name
+  principal_id: uami_admin.properties.principalId
+}
 

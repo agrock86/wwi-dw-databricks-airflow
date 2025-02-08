@@ -72,6 +72,12 @@ resource sqldb_wwi_oltp 'Microsoft.Sql/servers/databases@2023-08-01-preview' = {
   }
 }
 
-output sqlsrv_wwi_oltp_id string = sqlsrv_wwi_oltp.id
-output sqlsrv_wwi_oltp_name string = sqlsrv_wwi_oltp.name
-output sqldb_wwi_oltp_name string = sqldb_wwi_oltp.name
+output sqlsrv_wwi_oltp object = {
+  id: sqlsrv_wwi_oltp.id
+  name: sqlsrv_wwi_oltp.name
+}
+
+output sqldb_wwi_oltp object = {
+  id: sqldb_wwi_oltp.id
+  name: sqldb_wwi_oltp.name
+}

@@ -25,7 +25,7 @@ Import-Module SQLServer
 
 # $storage_uri = "https://${backup_storage_account}.blob.core.windows.net/${project}/${db_name}.bacpac"
 $storage_uri = "https://${backup_storage_account}.blob.core.windows.net/wwi-migration/${db_name}.bacpac"
-$resource_group_name = "${project}-rg-${env}"
+$resource_group_name = "${project}-rg-main-${env}"
 $etl_login = "etl_app"
 
 # $db = Get-AzSqlDatabase -ResourceGroupName $resource_group_name -ServerName $server_name -DatabaseName $db_name

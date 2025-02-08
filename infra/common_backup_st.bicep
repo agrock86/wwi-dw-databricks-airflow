@@ -1,5 +1,4 @@
 param tenant_id string
-param project string
 param env string
 param access_rules_resource_id string
 param client_ip string
@@ -7,7 +6,7 @@ param client_ip string
 var default_location = resourceGroup().location
 
 resource st_backup 'Microsoft.Storage/storageAccounts@2023-05-01' = {
-  name: '${project}stbackup${env}'
+  name: 'common270f06estbackup${env}'
   location: default_location
   properties: {
     minimumTlsVersion: 'TLS1_2'
@@ -95,4 +94,9 @@ resource blob_backup 'Microsoft.Storage/storageAccounts/blobServices/containers@
     denyEncryptionScopeOverride: false
     publicAccess: 'None'
   }
+}
+
+output st_backup object = {
+  id: st_backup.id
+  name: st_backup.name
 }

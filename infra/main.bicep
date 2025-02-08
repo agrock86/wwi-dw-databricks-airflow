@@ -36,12 +36,8 @@ module dply_common_rg 'common_rg.bicep' = {
   name: '${project}-dply-common-rg-${deployment_id}-${env}'
   scope: rg_common
   params: {
-    project: project
-    env: env
+    uami_admin: dply_main_rg.outputs.uami_admin
   }
-  dependsOn: [
-    rg_main
-  ]
 }
 
 module dply_main_vnet './main_vnet.bicep' = {
@@ -70,9 +66,8 @@ module dply_common_backup_st 'common_backup_st.bicep' = {
   scope: rg_common
   params: {
     tenant_id: tenant_id
-    project: project
     env: env
-    access_rules_resource_id: dply_oltp_db.outputs.sqlsrv_wwi_oltp_id
+    access_rules_resource_id: dply_oltp_db.outputs.sqlsrv_wwi_oltp.id
     client_ip: client_ip
   }
 }
@@ -85,8 +80,9 @@ module dply_oltp_db_restore './oltp_db_restore.bicep' = {
     env: env
     admin_login: admin_login
     admin_password: admin_password
-    sqlsrv_wwi_oltp_name: dply_oltp_db.outputs.sqlsrv_wwi_oltp_name
-    sqldb_wwi_oltp_name: dply_oltp_db.outputs.sqldb_wwi_oltp_name
+    sqlsrv_wwi_oltp: dply_oltp_db.outputs.sqlsrv_wwi_oltp
+    sqldb_wwi_oltp: dply_oltp_db.outputs.sqldb_wwi_oltp
+    st_backup: dply_common_backup_st.outputs.st_backup
   }
 }
 
@@ -98,10 +94,10 @@ module dply_airflow_vm './airflow_vm.bicep' = {
     env: env
     admin_login: admin_login
     admin_password: admin_password
+    vnet_main: dply_main_vnet.outputs.vnet_main
+    snet_airflow: dply_main_vnet.outputs.snet_airflow
+    nseg_airflow: dply_main_vnet.outputs.nseg_airflow
   }
-  dependsOn: [
-    dply_main_vnet
-  ]
 }
 
 //TO-DO: make the Azure SQL Server private after deployment
