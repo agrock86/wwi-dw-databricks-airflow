@@ -1,9 +1,10 @@
 #!/bin/sh
 sudo sh setup_docker.sh
 
-curl -LfO 'https://airflow.apache.org/docs/apache-airflow/2.10.4/docker-compose.yaml'
+sudo curl -LfO 'https://airflow.apache.org/docs/apache-airflow/2.10.4/docker-compose.yaml'
 
-mkdir -p ./dags ./logs ./plugins ./config
-echo -e "AIRFLOW_UID=$(id -u)" > .env.docker
+sudo mkdir -p ./dags ./logs ./plugins ./config
+sudo echo -e "AIRFLOW_UID=$(id -u)" > .env.docker
 
-# docker compose --env-file .env.docker config up airflow-init
+sudo docker compose --env-file .env.docker config
+sudo docker compose up airflow-init
