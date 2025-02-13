@@ -3,6 +3,8 @@ param env string
 param admin_login string
 @secure()
 param admin_password string
+@secure()
+param ssh_public_key string
 param vnet_main object
 param snet_airflow object
 
@@ -17,7 +19,8 @@ resource nseg_airflow 'Microsoft.Network/networkSecurityGroups@2024-01-01' = {
     name: 'SshRdpInbound'
     properties: {
       access: 'Allow'
-      destinationAddressPrefix: 'VirtualNetwork'
+      // destinationAddressPrefix: 'VirtualNetwork'
+      destinationAddressPrefix: '*'
       destinationAddressPrefixes: []
       destinationPortRanges: [
         '22'
@@ -26,7 +29,8 @@ resource nseg_airflow 'Microsoft.Network/networkSecurityGroups@2024-01-01' = {
       direction: 'Inbound'
       priority: 100
       protocol: '*'
-      sourceAddressPrefix: '10.0.1.0/26'
+      // sourceAddressPrefix: '10.0.1.0/26'
+      sourceAddressPrefix: '*'
       sourceAddressPrefixes: []
       sourcePortRange: '*'
       sourcePortRanges: []
@@ -52,9 +56,21 @@ resource nseg_airflow 'Microsoft.Network/networkSecurityGroups@2024-01-01' = {
   }
 }
 
+resource pip_airflow 'Microsoft.Network/publicIPAddresses@2021-02-01' = {
+  location: default_location
+  name: '${project}-pip-airflow-${env}'
+  sku: {
+    name: 'Basic'
+  }
+  properties: {
+    publicIPAllocationMethod: 'Dynamic' // Use 'Static' if you need a fixed IP
+    publicIPAddressVersion: 'IPv4'
+  }
+}
+
 resource nic_airflow 'Microsoft.Network/networkInterfaces@2024-01-01' = {
   location: default_location
-  name: '${project}-nic-${env}'
+  name: '${project}-nic-airflow-${env}'
   properties: {
     auxiliaryMode: 'None'
     auxiliarySku: 'None'
@@ -75,6 +91,9 @@ resource nic_airflow 'Microsoft.Network/networkInterfaces@2024-01-01' = {
           subnet: {
             id: resourceId('Microsoft.Network/virtualNetworks/subnets', vnet_main.name, snet_airflow.name)
           }
+          publicIPAddress: {
+            id: pip_airflow.id
+          }
         }
         type: 'Microsoft.Network/networkInterfaces/ipConfigurations'
       }
@@ -83,6 +102,14 @@ resource nic_airflow 'Microsoft.Network/networkInterfaces@2024-01-01' = {
       id: resourceId('Microsoft.Network/networkSecurityGroups', nseg_airflow.name)
     }
     nicType: 'Standard'
+  }
+}
+
+resource sshk_vm_airflow 'Microsoft.Compute/sshPublicKeys@2022-11-01' = {
+  location: default_location
+  name: '${project}-sshk-vm-airflow-${env}'
+  properties: {
+    publicKey: ssh_public_key
   }
 }
 
@@ -132,8 +159,7 @@ resource vm_airflow 'Microsoft.Compute/virtualMachines@2024-07-01' = {
         ssh: {
           publicKeys: [
             {
-              // TO-DO: automatically generate key pair and add public key to the VM.
-              keyData: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC6gPt4S5gLm9mQvA3cPzPYbNT0AbNHEo7Shevjm1IIDhZUDjDd1/J3ljY0tHDrKylrQ8INcuwTLhO1ckvjmyeGupRKN22HpYf+8htUQROtfzkFOwNUP1pZr6z/gWBBA+Ps3H1RkQhxL9euCdFYaql4M9eobFDXAMB1j7iuDI/diyGsUZEsIqB5WnPHBanoP8To1uSzkCtZS0zYuStW9bayI8K+gXPE/dhG2yFH7wgdg1qL5tP5aAx+liEmdbPZb5TG0Y4oHDiman8wOq+AOgWcOwWPDGD+Kk8q8aGyjIOcrWphvCg5g0Ncweek0uaVppjFIQnzcftHLXJzIQf7NjVQTwrZYnAUsUr2b7oVDbDpIlaBn6ATtHv/0RMbiSx1Qld6qbKSzO9rAfrCZQkGILTyZLNyFzak8q+BBNgnM6+QCz35KUG7rql1feFcp3PcB3vt7bxoyo+YOjinOwxKvf7Az8O/K5f1dwuIAEitADuwLiFuju+2EtIaOv3J/Luzyyk= generated-by-azure'
+              keyData: sshk_vm_airflow.properties.publicKey
               path: '/home/${admin_login}/.ssh/authorized_keys'
             }
           ]
@@ -164,9 +190,9 @@ resource vm_airflow 'Microsoft.Compute/virtualMachines@2024-07-01' = {
   }
 }
 
-resource vmext_airflow 'Microsoft.Compute/virtualMachines/extensions@2024-07-01' = {
+resource vmext_airflow_setup 'Microsoft.Compute/virtualMachines/extensions@2024-07-01' = {
   location: default_location
-  name: 'docker_install'
+  name: 'airflow_setup'
   parent: vm_airflow
   properties: {
     publisher: 'Microsoft.Azure.Extensions'
@@ -174,9 +200,11 @@ resource vmext_airflow 'Microsoft.Compute/virtualMachines/extensions@2024-07-01'
     typeHandlerVersion: '2.1'
     settings: {
       fileUris: [
-        'https://raw.githubusercontent.com/agrock86/wwi-dw-databricks-airflow/refs/heads/main/infra/install_docker.sh'
+        'https://raw.githubusercontent.com/agrock86/wwi-dw-databricks-airflow/refs/heads/main/infra/setup_docker.sh'
+        'https://raw.githubusercontent.com/agrock86/wwi-dw-databricks-airflow/refs/heads/main/infra/setup_airflow.sh'
+        'https://raw.githubusercontent.com/agrock86/wwi-dw-databricks-airflow/refs/heads/main/infra/setup.sh'
       ]
-      commandToExecute: 'sudo sh install_docker.sh'
+      commandToExecute: 'sudo sh setup.sh'
     }
   }
 }

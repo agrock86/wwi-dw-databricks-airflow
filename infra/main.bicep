@@ -6,6 +6,8 @@ param project string
 param env string
 @secure()
 param admin_password string
+@secure()
+param ssh_public_key string
 param client_ip string
 
 var admin_login = 'sys_admin'
@@ -92,6 +94,7 @@ module dply_airflow_vm './airflow_vm.bicep' = {
     env: env
     admin_login: admin_login
     admin_password: admin_password
+    ssh_public_key: ssh_public_key
     vnet_main: dply_main_vnet.outputs.vnet_main
     snet_airflow: dply_main_vnet.outputs.snet_airflow
   }
