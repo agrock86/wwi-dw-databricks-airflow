@@ -1,3 +1,6 @@
+#!/bin/sh
+sudo sh setup.sh
+
 curl -LfO 'https://airflow.apache.org/docs/apache-airflow/2.10.4/docker-compose.yaml'
 
 mkdir -p ./dags ./logs ./plugins ./config
