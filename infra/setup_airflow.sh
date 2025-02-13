@@ -1,7 +1,14 @@
-mkdir -p /opt/airflow
-cd /opt/airflow
+while getopts airflow_dir: flag
+do
+    case "${flag}" in
+        airflow_dir) airflow_dir=${OPTARG};;
+    esac
+done
 
-curl -LfO 'https://airflow.apache.org/docs/apache-airflow/2.10.4/docker-compose.yaml'
+mkdir -p $airflow_dir
+cd $airflow_dir
+
+curl -LfO "https://airflow.apache.org/docs/apache-airflow/2.10.4/docker-compose.yaml"
 
 mkdir -p ./dags ./logs ./plugins ./config
 echo -e "AIRFLOW_UID=$(id -u)" > .env.docker
