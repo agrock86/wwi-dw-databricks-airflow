@@ -1,4 +1,4 @@
-mkdir /opt/airflow
+mkdir -p /opt/airflow
 cd /opt/airflow
 
 curl -LfO 'https://airflow.apache.org/docs/apache-airflow/2.10.4/docker-compose.yaml'
