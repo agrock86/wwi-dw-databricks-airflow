@@ -1,7 +1,7 @@
-while getopts airflow_dir: flag
+while getopts a: flag
 do
     case "${flag}" in
-        airflow_dir) airflow_dir=${OPTARG};;
+        a) airflow_dir=${OPTARG};;
     esac
 done
 

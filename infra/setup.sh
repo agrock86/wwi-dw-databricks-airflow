@@ -1,9 +1,9 @@
-while getopts airflow_dir: flag
+while getopts a: flag
 do
     case "${flag}" in
-        airflow_dir) airflow_dir=${OPTARG};;
+        a) airflow_dir=${OPTARG};;
     esac
 done
 
 sudo sh setup_docker.sh
-sudo sh setup_airflow.sh -airflow_dir $airflow_dir
+sudo sh setup_airflow.sh -a $airflow_dir
