@@ -10,7 +10,7 @@ param (
     [Parameter(Mandatory=$true)]
     [string]$admin_login,
     [Parameter(Mandatory=$true)]
-    # There is no way to pass a secure string parameter from bicep, so a normal string is used.
+    # there is no way to pass a secure string parameter from bicep, so a normal string is used.
     [string]$admin_password,
     [Parameter(Mandatory=$true)]
     [string]$backup_storage_account
@@ -20,7 +20,7 @@ if (-not (Get-Module -ListAvailable -Name SQLServer)) {
     Install-Module -Name SQLServer -Force -AllowClobber -Scope CurrentUser
 }
 
-# Required to use Invoke-SqlCmd.
+# required to use Invoke-SqlCmd.
 Import-Module SQLServer
 
 # $storage_uri = "https://${backup_storage_account}.blob.core.windows.net/${project}/${db_name}.bacpac"
@@ -40,7 +40,7 @@ $import_request = New-AzSqlDatabaseImport -ResourceGroupName $resource_group_nam
     -AdministratorLogin $admin_login `
     -AdministratorLoginPassword $(ConvertTo-SecureString -String $admin_password -AsPlainText -Force)
 
-# Check restore status and wait for the import to complete.
+# check restore status and wait for the import to complete.
 $import_status = Get-AzSqlDatabaseImportExportStatus -OperationStatusLink $import_request.OperationStatusLink
 [Console]::Write("Importing")
 while ($import_status.Status -eq "InProgress")

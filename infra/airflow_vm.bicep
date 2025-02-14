@@ -9,6 +9,7 @@ param vnet_main object
 param snet_airflow object
 
 var default_location = resourceGroup().location
+var airflow_dir = '/opt/airflow'
 
 resource nseg_airflow 'Microsoft.Network/networkSecurityGroups@2024-01-01' = {
   location: default_location
@@ -204,7 +205,7 @@ resource vmext_airflow_setup 'Microsoft.Compute/virtualMachines/extensions@2024-
         'https://raw.githubusercontent.com/agrock86/wwi-dw-databricks-airflow/refs/heads/main/infra/setup_airflow.sh'
         'https://raw.githubusercontent.com/agrock86/wwi-dw-databricks-airflow/refs/heads/main/infra/setup.sh'
       ]
-      commandToExecute: 'sudo sh setup.sh'
+      commandToExecute: 'sudo sh setup.sh --airflow_dir=${airflow_dir}'
     }
   }
 }

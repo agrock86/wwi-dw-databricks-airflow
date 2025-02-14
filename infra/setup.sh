@@ -18,3 +18,4 @@ fi
 
 sudo ./setup_docker.sh
 sudo ./setup_airflow.sh --airflow_dir=$airflow_dir
+sudo ./setup_git.sh --airflow_dir=$airflow_dir
