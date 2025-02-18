@@ -6,10 +6,24 @@ param admin_password string
 @secure()
 param ssh_public_key string
 param vnet_main object
-param snet_airflow object
 
 var default_location = resourceGroup().location
 var airflow_dir = '/opt/airflow'
+
+resource _vnet_main 'Microsoft.Network/virtualNetworks@2024-01-01' existing = {
+  name: vnet_main.name
+}
+
+resource snet_airflow 'Microsoft.Network/virtualNetworks/subnets@2024-01-01' = {
+  name: '${project}-snet-airflow-${env}'
+  parent: _vnet_main
+  properties: {
+    addressPrefix: '10.1.0.0/24'
+    delegations: []
+    privateEndpointNetworkPolicies: 'Disabled'
+    privateLinkServiceNetworkPolicies: 'Enabled'
+  }
+}
 
 resource nseg_airflow 'Microsoft.Network/networkSecurityGroups@2024-01-01' = {
   location: default_location
@@ -90,7 +104,7 @@ resource nic_airflow 'Microsoft.Network/networkInterfaces@2024-01-01' = {
           privateIPAddressVersion: 'IPv4'
           privateIPAllocationMethod: 'Dynamic'
           subnet: {
-            id: resourceId('Microsoft.Network/virtualNetworks/subnets', vnet_main.name, snet_airflow.name)
+            id: resourceId('Microsoft.Network/virtualNetworks/subnets', _vnet_main.name, snet_airflow.name)
           }
           publicIPAddress: {
             id: pip_airflow.id
@@ -208,4 +222,176 @@ resource vmext_airflow_setup 'Microsoft.Compute/virtualMachines/extensions@2024-
       commandToExecute: 'sudo sh setup.sh --airflow_dir=${airflow_dir}'
     }
   }
+}
+
+resource nseg_airflow_bastion 'Microsoft.Network/networkSecurityGroups@2024-01-01' = {
+  location: default_location
+  name: '${project}-nseg-airflow-bastion-${env}'
+  properties: {}
+  
+  resource nsegrul_etl_bastion_ssh 'securityRules' = {
+    name: 'SshRdpOutbound'
+    properties: {
+      access: 'Allow'
+      destinationAddressPrefix: 'VirtualNetwork'
+      destinationAddressPrefixes: []
+      destinationPortRanges: [
+        '22'
+        '3389'
+      ]
+      direction: 'Outbound'
+      priority: 100
+      protocol: '*'
+      sourceAddressPrefix: '*'
+      sourceAddressPrefixes: []
+      sourcePortRange: '*'
+      sourcePortRanges: []
+    }
+  }
+
+  resource nsegrul_etl_bastion_azure 'securityRules' = {
+    name: 'AzureCloudOutbound'
+    properties: {
+      access: 'Allow'
+      destinationAddressPrefix: 'AzureCloud'
+      destinationAddressPrefixes: []
+      destinationPortRange: '443'
+      destinationPortRanges: []
+      direction: 'Outbound'
+      priority: 110
+      protocol: 'TCP'
+      sourceAddressPrefix: '*'
+      sourceAddressPrefixes: []
+      sourcePortRange: '*'
+      sourcePortRanges: []
+    }
+  }
+  
+  resource nsegrul_etl_bastion_outbound 'securityRules' = {
+    name: 'BastionCommOutbound'
+    properties: {
+      access: 'Allow'
+      destinationAddressPrefix: 'VirtualNetwork'
+      destinationAddressPrefixes: []
+      destinationPortRanges: [
+        '8080'
+        '5701'
+      ]
+      direction: 'Outbound'
+      priority: 120
+      protocol: '*'
+      sourceAddressPrefix: 'VirtualNetwork'
+      sourceAddressPrefixes: []
+      sourcePortRange: '*'
+      sourcePortRanges: []
+    }
+  }
+
+  resource nsegrul_etl_bastion_http_inbound 'securityRules' = {
+    name: 'HttpsInbound'
+    properties: {
+      access: 'Allow'
+      destinationAddressPrefix: '*'
+      destinationAddressPrefixes: []
+      destinationPortRange: '443'
+      destinationPortRanges: []
+      direction: 'Inbound'
+      priority: 130
+      protocol: 'TCP'
+      sourceAddressPrefix: 'Internet'
+      sourceAddressPrefixes: []
+      sourcePortRange: '*'
+      sourcePortRanges: []
+    }
+  }
+
+  resource nsegrul_etl_bastion_load_balancer 'securityRules' = {
+    name: 'LoadBalancerInbound'
+    properties: {
+      access: 'Allow'
+      destinationAddressPrefix: '*'
+      destinationAddressPrefixes: []
+      destinationPortRange: '443'
+      destinationPortRanges: []
+      direction: 'Inbound'
+      priority: 150
+      protocol: 'TCP'
+      sourceAddressPrefix: 'AzureLoadBalancer'
+      sourceAddressPrefixes: []
+      sourcePortRange: '*'
+      sourcePortRanges: []
+    }
+  }
+  
+  resource nsegrul_etl_bastion_gateway_manager 'securityRules' = {
+    name: 'GatewayManagerInbound'
+    properties: {
+      access: 'Allow'
+      destinationAddressPrefix: '*'
+      destinationAddressPrefixes: []
+      destinationPortRange: '443'
+      destinationPortRanges: []
+      direction: 'Inbound'
+      priority: 160
+      protocol: 'TCP'
+      sourceAddressPrefix: 'GatewayManager'
+      sourceAddressPrefixes: []
+      sourcePortRange: '*'
+      sourcePortRanges: []
+    }
+  }
+  
+  resource nsegrul_etl_bastion_inbound 'securityRules' = {
+    name: 'BastionHostCommInbound'
+    properties: {
+      access: 'Allow'
+      destinationAddressPrefix: 'VirtualNetwork'
+      destinationAddressPrefixes: []
+      destinationPortRanges: [
+        '8080'
+        '5701'
+      ]
+      direction: 'Inbound'
+      priority: 170
+      protocol: '*'
+      sourceAddressPrefix: 'VirtualNetwork'
+      sourceAddressPrefixes: []
+      sourcePortRange: '*'
+      sourcePortRanges: []
+    }
+  }
+
+  resource nsegrul_etl_bastion_http_outbound 'securityRules' = {
+    name: 'AnyHttpOutbound'
+    properties: {
+      access: 'Allow'
+      destinationAddressPrefix: 'Internet'
+      destinationAddressPrefixes: []
+      destinationPortRange: '80'
+      destinationPortRanges: []
+      direction: 'Outbound'
+      priority: 180
+      protocol: '*'
+      sourceAddressPrefix: '*'
+      sourceAddressPrefixes: []
+      sourcePortRange: '*'
+      sourcePortRanges: []
+    }
+  }
+}
+
+resource snet_airflow_bastion 'Microsoft.Network/virtualNetworks/subnets@2024-01-01' = {
+  name: '${project}-snet-airflow-bastion-${env}'
+  properties: {
+    addressPrefix: '10.1.1.0/26'
+    delegations: []
+    networkSecurityGroup: {
+      id: nseg_airflow_bastion.id
+    }
+    privateEndpointNetworkPolicies: 'Disabled'
+    privateLinkServiceNetworkPolicies: 'Enabled'
+  }
+  dependsOn: [
+    snet_airflow // this guarantees sequential creation order; otherwise it will error out.
+  ]
 }

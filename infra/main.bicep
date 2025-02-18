@@ -96,7 +96,6 @@ module dply_airflow_vm './airflow_vm.bicep' = {
     admin_password: admin_password
     ssh_public_key: ssh_public_key
     vnet_main: dply_main_vnet.outputs.vnet_main
-    snet_airflow: dply_main_vnet.outputs.snet_airflow
   }
 }
 
