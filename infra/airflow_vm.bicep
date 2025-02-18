@@ -217,6 +217,7 @@ resource vmext_airflow_setup 'Microsoft.Compute/virtualMachines/extensions@2024-
       fileUris: [
         'https://raw.githubusercontent.com/agrock86/wwi-dw-databricks-airflow/refs/heads/main/infra/setup_docker.sh'
         'https://raw.githubusercontent.com/agrock86/wwi-dw-databricks-airflow/refs/heads/main/infra/setup_airflow.sh'
+        'https://raw.githubusercontent.com/agrock86/wwi-dw-databricks-airflow/refs/heads/main/infra/setup_git.sh'
         'https://raw.githubusercontent.com/agrock86/wwi-dw-databricks-airflow/refs/heads/main/infra/setup.sh'
       ]
       commandToExecute: 'sudo sh setup.sh --airflow_dir=${airflow_dir}'
@@ -382,6 +383,7 @@ resource nseg_airflow_bastion 'Microsoft.Network/networkSecurityGroups@2024-01-0
 
 resource snet_airflow_bastion 'Microsoft.Network/virtualNetworks/subnets@2024-01-01' = {
   name: '${project}-snet-airflow-bastion-${env}'
+  parent: _vnet_main
   properties: {
     addressPrefix: '10.1.1.0/26'
     delegations: []
