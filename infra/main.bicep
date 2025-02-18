@@ -86,15 +86,25 @@ module dply_common_backup_st 'common_backup_st.bicep' = {
 //   }
 // }
 
-module dply_airflow_vm './airflow_vm.bicep' = {
-  name: '${project}-dply-airflow-vm-${deployment_id}-${env}'
+// module dply_airflow_vm './airflow_vm.bicep' = {
+//   name: '${project}-dply-airflow-vm-${deployment_id}-${env}'
+//   scope: rg_main
+//   params: {
+//     project: project
+//     env: env
+//     admin_login: admin_login
+//     admin_password: admin_password
+//     ssh_public_key: ssh_public_key
+//     vnet_main: dply_main_vnet.outputs.vnet_main
+//   }
+// }
+
+module dply_main_adb './main_adb.bicep' = {
+  name: '${project}-dply-main-adb-${deployment_id}-${env}'
   scope: rg_main
   params: {
     project: project
     env: env
-    admin_login: admin_login
-    admin_password: admin_password
-    ssh_public_key: ssh_public_key
     vnet_main: dply_main_vnet.outputs.vnet_main
   }
 }

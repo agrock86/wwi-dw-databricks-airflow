@@ -120,9 +120,9 @@ resource nic_airflow 'Microsoft.Network/networkInterfaces@2024-01-01' = {
   }
 }
 
-resource sshk_vm_airflow 'Microsoft.Compute/sshPublicKeys@2022-11-01' = {
+resource sshk_airflow 'Microsoft.Compute/sshPublicKeys@2022-11-01' = {
   location: default_location
-  name: '${project}-sshk-vm-airflow-${env}'
+  name: '${project}-sshk-airflow-${env}'
   properties: {
     publicKey: ssh_public_key
   }
@@ -174,7 +174,7 @@ resource vm_airflow 'Microsoft.Compute/virtualMachines@2024-07-01' = {
         ssh: {
           publicKeys: [
             {
-              keyData: sshk_vm_airflow.properties.publicKey
+              keyData: sshk_airflow.properties.publicKey
               path: '/home/${admin_login}/.ssh/authorized_keys'
             }
           ]
@@ -397,3 +397,36 @@ resource snet_airflow_bastion 'Microsoft.Network/virtualNetworks/subnets@2024-01
     snet_airflow // this guarantees sequential creation order; otherwise it will error out.
   ]
 }
+
+// resource bsth_airflow 'Microsoft.Network/bastionHosts@2024-01-01' = {
+//   location: default_location
+//   name: '${project}-bsth-airflow-${env}'
+//   properties: {
+//     disableCopyPaste: false
+//     dnsName: 'bst-e2a0479d-a5c6-4ba1-ae57-0efffeb60cd9.bastion.azure.com'
+//     enableIpConnect: true
+//     enableKerberos: false
+//     enableSessionRecording: false
+//     enableShareableLink: false
+//     enableTunneling: true
+//     ipConfigurations: [
+//       {
+//         id: '${bastionHosts_wwi_migration_bst_aflw_dev_name_resource.id}/bastionHostIpConfigurations/IpConf'
+//         name: 'IpConf'
+//         properties: {
+//           privateIPAllocationMethod: 'Dynamic'
+//           publicIPAddress: {
+//             id: publicIPAddresses_wwi_migration_vm_aflw_dev_vnet_ip_name_resource.id
+//           }
+//           subnet: {
+//             id: virtualNetworks_wwi_migration_vm_aflw_dev_vnet_name_AzureBastionSubnet.id
+//           }
+//         }
+//       }
+//     ]
+//     scaleUnits: 2
+//   }
+//   sku: {
+//     name: 'Standard'
+//   }
+// }

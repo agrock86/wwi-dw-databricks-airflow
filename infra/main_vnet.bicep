@@ -19,26 +19,26 @@ resource vnet_main 'Microsoft.Network/virtualNetworks@2024-01-01' = {
       enabled: false
       enforcement: 'AllowUnencrypted'
     }
-    subnets: [
-      // subnets must be defined here to enforce sequential creation order; otherwise it will error out.
-      {
-        name: '${project}-snet-data-${env}'
-        properties: {
-          addressPrefix: '10.0.0.0/24'
-          delegations: []
-          privateEndpointNetworkPolicies: 'Disabled'
-          privateLinkServiceNetworkPolicies: 'Enabled'
-          serviceEndpoints: [
-            {
-              locations: [
-                default_location
-              ]
-              service: 'Microsoft.Storage'
-            }
-          ]
-        }
-      }
-    ]
+    // subnets: [
+    //   // subnets must be defined here to enforce sequential creation order; otherwise it will error out.
+    //   {
+    //     name: '${project}-snet-data-${env}'
+    //     properties: {
+    //       addressPrefix: '10.0.0.0/24'
+    //       delegations: []
+    //       privateEndpointNetworkPolicies: 'Disabled'
+    //       privateLinkServiceNetworkPolicies: 'Enabled'
+    //       serviceEndpoints: [
+    //         {
+    //           locations: [
+    //             default_location
+    //           ]
+    //           service: 'Microsoft.Storage'
+    //         }
+    //       ]
+    //     }
+    //   }
+    // ]
   }
 }
 

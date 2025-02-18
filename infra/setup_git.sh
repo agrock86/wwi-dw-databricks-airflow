@@ -35,4 +35,4 @@ else
 fi
 
 # sync only Python files from the 'dag' folder in the repository to the Airflow DAGs folder
-rsync -av --include="*.py" --exclude="*" "$temp_dir/dag/" "$dags_dir/"
+rsync -av --include="*.py" --exclude="*" "$temp_dir/dags/" "$dags_dir/"
