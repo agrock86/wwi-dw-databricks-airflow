@@ -23,7 +23,7 @@ if (-not (Get-Module -ListAvailable -Name SQLServer)) {
 # required to use Invoke-SqlCmd.
 Import-Module SQLServer
 
-# $storage_uri = "https://${backup_storage_account}.blob.core.windows.net/${project}/${db_name}.bacpac"
+# $storage_uri = "https://${backup_storage_account}.blob.core.windows.net/${project}/${db_name}.bacpac" TO-DO: remove.
 $storage_uri = "https://${backup_storage_account}.blob.core.windows.net/wwi-migration/${db_name}.bacpac"
 $resource_group_name = "${project}-rg-main-${env}"
 $etl_login = "etl_app"

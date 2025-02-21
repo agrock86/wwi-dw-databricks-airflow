@@ -106,9 +106,9 @@ resource nic_airflow 'Microsoft.Network/networkInterfaces@2024-01-01' = {
           subnet: {
             id: resourceId('Microsoft.Network/virtualNetworks/subnets', _vnet_main.name, snet_airflow.name)
           }
-          publicIPAddress: {
-            id: pip_airflow.id
-          }
+          // publicIPAddress: {
+          //   id: pip_airflow.id
+          // }
         }
         type: 'Microsoft.Network/networkInterfaces/ipConfigurations'
       }
@@ -382,7 +382,7 @@ resource nseg_airflow_bastion 'Microsoft.Network/networkSecurityGroups@2024-01-0
 }
 
 resource snet_airflow_bastion 'Microsoft.Network/virtualNetworks/subnets@2024-01-01' = {
-  name: '${project}-snet-airflow-bastion-${env}'
+  name: 'AzureBastionSubnet' // Azure Bastion can only be created in subnet with this name.
   parent: _vnet_main
   properties: {
     addressPrefix: '10.1.1.0/26'
@@ -398,35 +398,33 @@ resource snet_airflow_bastion 'Microsoft.Network/virtualNetworks/subnets@2024-01
   ]
 }
 
-// resource bsth_airflow 'Microsoft.Network/bastionHosts@2024-01-01' = {
-//   location: default_location
-//   name: '${project}-bsth-airflow-${env}'
-//   properties: {
-//     disableCopyPaste: false
-//     dnsName: 'bst-e2a0479d-a5c6-4ba1-ae57-0efffeb60cd9.bastion.azure.com'
-//     enableIpConnect: true
-//     enableKerberos: false
-//     enableSessionRecording: false
-//     enableShareableLink: false
-//     enableTunneling: true
-//     ipConfigurations: [
-//       {
-//         id: '${bastionHosts_wwi_migration_bst_aflw_dev_name_resource.id}/bastionHostIpConfigurations/IpConf'
-//         name: 'IpConf'
-//         properties: {
-//           privateIPAllocationMethod: 'Dynamic'
-//           publicIPAddress: {
-//             id: publicIPAddresses_wwi_migration_vm_aflw_dev_vnet_ip_name_resource.id
-//           }
-//           subnet: {
-//             id: virtualNetworks_wwi_migration_vm_aflw_dev_vnet_name_AzureBastionSubnet.id
-//           }
-//         }
-//       }
-//     ]
-//     scaleUnits: 2
-//   }
-//   sku: {
-//     name: 'Standard'
-//   }
-// }
+resource bsth_airflow 'Microsoft.Network/bastionHosts@2024-01-01' = {
+  location: default_location
+  name: '${project}-bsth-airflow-${env}'
+  properties: {
+    disableCopyPaste: false
+    enableIpConnect: true
+    enableKerberos: false
+    enableSessionRecording: false
+    enableShareableLink: false
+    enableTunneling: true
+    ipConfigurations: [
+      {
+        name: 'ipconfig'
+        properties: {
+          privateIPAllocationMethod: 'Dynamic'
+          publicIPAddress: {
+            id: pip_airflow.id
+          }
+          subnet: {
+            id: snet_airflow_bastion.id
+          }
+        }
+      }
+    ]
+    scaleUnits: 2
+  }
+  sku: {
+    name: 'Standard'
+  }
+}

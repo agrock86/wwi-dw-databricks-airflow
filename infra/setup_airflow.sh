@@ -1,7 +1,7 @@
-# default value
+# default value.
 airflow_dir=""
 
-# parse argument
+# parse argument.
 while [ "$#" -gt 0 ]; do
   case "$1" in
     --airflow_dir=*) airflow_dir="${1#*=}";;
@@ -10,7 +10,7 @@ while [ "$#" -gt 0 ]; do
   shift
 done
 
-# validate input
+# validate input.
 if [ -z "$airflow_dir" ]; then
   echo "Error: --airflow_dir parameter is required."
   exit 1
